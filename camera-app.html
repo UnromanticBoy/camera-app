@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Nspira Camera - Photo Stamping</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: #16213e;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e94560;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: #e94560;
+            font-weight: 700;
+        }
+
+        /* ============================================================ */
+        /* NON-EDITABLE INFO DIV */
+        /* ============================================================ */
+        .info-div {
+            background: #0f0f23;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            border: 1px solid #2a2a4a;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #ddd;
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: none;
+        }
+
+        .info-div .company-name {
+            color: #e94560;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .info-div .gps-line {
+            color: #4fc3f7;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .info-div .gps-line .map-link {
+            color: #4fc3f7;
+            text-decoration: none;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .info-div .gps-line .map-link:hover {
+            text-decoration: underline;
+        }
+
+        .info-div .time-line {
+            color: #ffd54f;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .info-div .divider {
+            color: #444;
+            margin: 0 4px;
+        }
+
+        .info-div .icon {
+            margin-right: 6px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            background: #0f0f23;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 4 / 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .controls button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .btn-capture {
+            background: #e94560;
+            color: white;
+        }
+
+        .btn-capture:hover {
+            background: #c73652;
+            transform: scale(1.02);
+        }
+
+        .btn-switch {
+            background: #533483;
+            color: white;
+        }
+
+        .btn-switch:hover {
+            background: #6a4b9e;
+        }
+
+        .btn-download {
+            background: #0f3460;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #1a4a7a;
+        }
+
+        .btn-download:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        /* Preview after capture */
+        .preview-wrapper {
+            margin-top: 16px;
+            display: none;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #e94560;
+            position: relative;
+        }
+
+        .preview-wrapper img {
+            width: 100%;
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+
+            .controls button {
+                font-size: 13px;
+                padding: 10px 16px;
+                min-width: 70px;
+            }
+
+            .header h1 {
+                font-size: 15px;
+            }
+
+            .info-div {
+                font-size: 11px;
+                padding: 10px;
+                line-height: 1.6;
+            }
+
+            .info-div .company-name {
+                font-size: 14px;
+            }
+        }
+
+        /* Flash animation */
+        .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.1s;
+        }
+
+        .flash.active {
+            opacity: 0.8;
+        }
+
+        /* Status message */
+        .status-msg {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            padding: 8px;
+            border-radius: 8px;
+            background: #0f0f23;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .status-msg .ready {
+            color: #4caf50;
+        }
+
+        .status-msg .error {
+            color: #e94560;
+        }
+
+        /* Preview watermark */
+        .preview-label {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2px 10px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <h1>📸 Nspira Photo Stamping</h1>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- NON-EDITABLE INFO DIV -->
+        <!-- ========================================================== -->
+        <div class="info-div" id="infoDiv">
+            <div class="company-name">
+                <span class="icon">🏢</span> Nspira Mgmt Services Pvt Ltd
+            </div>
+            <div class="gps-line" id="gpsLine">
+                <span class="icon">📍</span> GPS: <span id="gpsCoords">Waiting for GPS...</span>
+                <span class="divider">|</span>
+                <span id="gpsLocation">Detecting location...</span>
+                <span class="divider">|</span>
+                <a href="#" id="mapLink" class="map-link" target="_blank">🗺️ View Map</a>
+            </div>
+            <div class="time-line" id="timeLine">
+                <span class="icon">🕐</span> Date &amp; Time: <span id="dateTimeDisplay">--/--/---- --:--:-- --</span>
+            </div>
+        </div>
+
+        <!-- Video Feed -->
+        <div class="video-wrapper">
+            <video id="video" autoplay playsinline></video>
+            <div class="flash" id="flash"></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="btn-capture" id="captureBtn">📷 Capture</button>
+            <button class="btn-switch" id="switchBtn">🔄 Switch</button>
+            <button class="btn-download" id="downloadBtn" disabled>⬇️ Download</button>
+        </div>
+
+        <!-- Status -->
+        <div class="status-msg" id="statusMsg">
+            <span class="ready">✅ Camera ready</span>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-wrapper" id="previewWrapper">
+            <img id="previewImage" alt="Captured preview" />
+            <div class="preview-label">NSPIRA</div>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // CONFIGURATION
+        // ============================================================
+        const CONFIG = {
+            companyName: 'Nspira Mgmt Services Pvt Ltd',
+            countPrefix: 'NSP-',
+            timeFormat: '12hr',
+            // Font settings for the stamp
+            stampFontSize: 16,
+            countFontSize: 32,
+        };
+
+        // ============================================================
+        // DOM References
+        // ============================================================
+        const video = document.getElementById('video');
+        const captureBtn = document.getElementById('captureBtn');
+        const switchBtn = document.getElementById('switchBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const previewWrapper = document.getElementById('previewWrapper');
+        const previewImage = document.getElementById('previewImage');
+        const flash = document.getElementById('flash');
+        const statusMsg = document.getElementById('statusMsg');
+
+        const gpsCoords = document.getElementById('gpsCoords');
+        const gpsLocation = document.getElementById('gpsLocation');
+        const dateTimeDisplay = document.getElementById('dateTimeDisplay');
+        const mapLink = document.getElementById('mapLink');
+
+        // ============================================================
+        // State
+        // ============================================================
+        let stream = null;
+        let facingMode = 'environment';
+        let photoCount = 0;
+        let currentPhotoBlob = null;
+        let currentGPS = { lat: null, lng: null, accuracy: null, address: 'Detecting location...' };
+        let lastLocationFetch = 0;
+
+        // ============================================================
+        // Helper: Format date/time in 12hr format with seconds
+        // ============================================================
+        function formatDateTime12hr(now) {
+            const d = now || new Date();
+            const pad = (n) => String(n).padStart(2, '0');
+
+            const day = pad(d.getDate());
+            const month = pad(d.getMonth() + 1);
+            const year = d.getFullYear();
+
+            let hours = d.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+
+            const minutes = pad(d.getMinutes());
+            const seconds = pad(d.getSeconds());
+
+            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+        }
+
+        // ============================================================
+        // Update the info div
+        // ============================================================
+        function updateInfoDiv() {
+            dateTimeDisplay.textContent = formatDateTime12hr();
+
+            if (currentGPS.lat !== null && currentGPS.lng !== null) {
+                const latStr = currentGPS.lat.toFixed(6);
+                const lngStr = currentGPS.lng.toFixed(6);
+                gpsCoords.textContent = `Lat ${latStr}° Long ${lngStr}°`;
+                mapLink.href = `https://www.google.com/maps?q=${currentGPS.lat},${currentGPS.lng}`;
+                gpsLocation.textContent = currentGPS.address || 'Detecting location...';
+            } else {
+                gpsCoords.textContent = 'Waiting for GPS...';
+                gpsLocation.textContent = 'Detecting location...';
+                mapLink.href = '#';
+            }
+        }
+
+        setInterval(updateInfoDiv, 1000);
+        updateInfoDiv();
+
+        // ============================================================
+        // Reverse Geocoding
+        // ============================================================
+        async function getLocationName(lat, lng) {
+            try {
+                const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data && data.display_name) {
+                    const addr = data.address;
+                    let parts = [];
+
+                    if (addr.road || addr.street) parts.push(addr.road || addr.street);
+                    if (addr.suburb || addr.neighbourhood) parts.push(addr.suburb || addr.neighbourhood);
+                    if (addr.city || addr.town || addr.village) parts.push(addr.city || addr.town || addr.village);
+                    if (addr.state) parts.push(addr.state);
+                    if (addr.country) parts.push(addr.country);
+
+                    // Build address like: "City, State, Country"
+                    let shortAddress = parts.join(', ');
+
+                    // If too short, use display_name
+                    if (shortAddress.length < 15) {
+                        shortAddress = data.display_name;
+                    }
+
+                    currentGPS.address = shortAddress;
+                } else {
+                    currentGPS.address = 'Location not found';
+                }
+            } catch (err) {
+                console.warn('Reverse geocoding error:', err);
+                currentGPS.address = 'Location unavailable';
+            }
+            gpsLocation.textContent = currentGPS.address;
+            return currentGPS.address;
+        }
+
+        // ============================================================
+        // Geolocation
+        // ============================================================
+        function startGeolocation() {
+            if (!navigator.geolocation) {
+                gpsCoords.textContent = '❌ GPS not available';
+                gpsLocation.textContent = 'GPS not supported';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    currentGPS.lat = pos.coords.latitude;
+                    currentGPS.lng = pos.coords.longitude;
+                    currentGPS.accuracy = pos.coords.accuracy;
+
+                    const latStr = currentGPS.lat.toFixed(6);
+                    const lngStr = currentGPS.lng.toFixed(6);
+                    gpsCoords.textContent = `Lat ${latStr}° Long ${lngStr}°`;
+                    mapLink.href = `https://www.google.com/maps?q=${currentGPS.lat},${currentGPS.lng}`;
+
+                    await getLocationName(currentGPS.lat, currentGPS.lng);
+                    updateInfoDiv();
+                },
+                (err) => {
+                    gpsCoords.textContent = `❌ GPS error`;
+                    gpsLocation.textContent = 'Location unavailable';
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 5000,
+                }
+            );
+
+            navigator.geolocation.watchPosition(
+                async (pos) => {
+                    const moved = currentGPS.lat !== null &&
+                        Math.abs(pos.coords.latitude - currentGPS.lat) > 0.0001 ||
+                        Math.abs(pos.coords.longitude - currentGPS.lng) > 0.0001;
+
+                    currentGPS.lat = pos.coords.latitude;
+                    currentGPS.lng = pos.coords.longitude;
+                    currentGPS.accuracy = pos.coords.accuracy;
+
+                    const latStr = currentGPS.lat.toFixed(6);
+                    const lngStr = currentGPS.lng.toFixed(6);
+                    gpsCoords.textContent = `Lat ${latStr}° Long ${lngStr}°`;
+                    mapLink.href = `https://www.google.com/maps?q=${currentGPS.lat},${currentGPS.lng}`;
+
+                    if (moved) {
+                        await getLocationName(currentGPS.lat, currentGPS.lng);
+                    }
+                    updateInfoDiv();
+                },
+                (err) => {},
+                { enableHighAccuracy: true, maximumAge: 10000 }
+            );
+        }
+
+        // ============================================================
+        // Camera setup
+        // ============================================================
+        async function startCamera(faceMode) {
+            try {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+
+                const constraints = {
+                    video: {
+                        facingMode: faceMode,
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 },
+                    },
+                    audio: false,
+                };
+
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;
+                await video.play();
+
+                statusMsg.innerHTML = `<span class="ready">✅ Camera ready (${faceMode === 'environment' ? 'Rear' : 'Front'})</span>`;
+                return true;
+            } catch (err) {
+                console.error('Camera error:', err);
+                statusMsg.innerHTML = `<span class="error">❌ Camera error: ${err.message}</span>`;
+                return false;
+            }
+        }
+
+        // ============================================================
+        // Capture photo - EXACTLY like the reference image
+        // ============================================================
+        function capturePhoto() {
+            if (!stream) {
+                alert('Camera not ready. Please wait.');
+                return;
+            }
+
+            // Flash effect
+            flash.classList.add('active');
+            setTimeout(() => flash.classList.remove('active'), 150);
+
+            // Increment count
+            photoCount++;
+            const countLabel = `${CONFIG.countPrefix}${photoCount}`;
+
+            // Get current data
+            const now = new Date();
+            const timestamp = formatDateTime12hr(now);
+            const lat = currentGPS.lat;
+            const lng = currentGPS.lng;
+            const address = currentGPS.address || 'Location unknown';
+
+            const latStr = lat !== null ? `${lat.toFixed(6)}°` : '--.------°';
+            const lngStr = lng !== null ? `${lng.toFixed(6)}°` : '--.------°';
+
+            // --- Draw the stamped image ---
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            const vw = video.videoWidth || 1280;
+            const vh = video.videoHeight || 720;
+            canvas.width = vw;
+            canvas.height = vh + 140; // Extra space at bottom for stamp
+
+            // 1) Draw the video frame
+            ctx.drawImage(video, 0, 0, vw, vh);
+
+            // 2) Dark background for stamp area (like the reference)
+            const stampY = vh;
+            const stampHeight = 140;
+            const gradient = ctx.createLinearGradient(0, stampY, 0, stampY + stampHeight);
+            gradient.addColorStop(0, 'rgba(0,0,0,0.92)');
+            gradient.addColorStop(1, 'rgba(10,10,30,0.98)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, stampY, vw, stampHeight);
+
+            // 3) Border line separating photo and stamp
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(20, stampY);
+            ctx.lineTo(vw - 20, stampY);
+            ctx.stroke();
+
+            // 4) Company Name (top of stamp area, left aligned) - RED like reference
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.font = `bold 18px 'Arial', 'Helvetica', sans-serif`;
+            ctx.fillStyle = '#e94560';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 1;
+            ctx.fillText(`🏢 ${CONFIG.companyName}`, 20, stampY + 14);
+
+            // 5) Address (below company name)
+            ctx.font = `15px 'Arial', 'Helvetica', sans-serif`;
+            ctx.fillStyle = '#aac8ff';
+            ctx.shadowBlur = 3;
+            ctx.fillText(`📍 ${address}`, 20, stampY + 42);
+
+            // 6) GPS Coordinates (below address)
+            ctx.font = `14px 'Courier New', monospace`;
+            ctx.fillStyle = '#8bc34a';
+            ctx.shadowBlur = 3;
+            ctx.fillText(`Lat ${latStr}  Long ${lngStr}`, 20, stampY + 68);
+
+            // 7) Date & Time (bottom of stamp, left aligned)
+            ctx.font = `15px 'Courier New', monospace`;
+            ctx.fillStyle = '#ffd54f';
+            ctx.shadowBlur = 3;
+            ctx.fillText(`🕐 ${timestamp}  GMT +05:30`, 20, stampY + 96);
+
+            // 8) Count label (top-right corner of stamp area)
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'top';
+            ctx.font = `bold ${CONFIG.countFontSize}px 'Arial Black', sans-serif`;
+            ctx.fillStyle = 'rgba(255,215,0,0.25)';
+            ctx.shadowBlur = 0;
+            ctx.fillText(countLabel, vw - 20, stampY + 10);
+
+            // 9) "NSPIRA" watermark at bottom-right (like "GPS Map Camera" in reference)
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.font = `13px 'Courier New', monospace`;
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.shadowBlur = 0;
+            ctx.fillText('NSPIRA', vw - 20, stampY + stampHeight - 10);
+
+            // Reset shadow
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+
+            // 10) Export
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    alert('Failed to capture image.');
+                    return;
+                }
+                currentPhotoBlob = blob;
+
+                const url = URL.createObjectURL(blob);
+                previewImage.src = url;
+                previewWrapper.style.display = 'block';
+
+                downloadBtn.disabled = false;
+                statusMsg.innerHTML = `<span class="ready">✅ Photo #${photoCount} captured! Press Download to save.</span>`;
+            }, 'image/jpeg', 0.92);
+        }
+
+        // ============================================================
+        // Download
+        // ============================================================
+        function downloadPhoto() {
+            if (!currentPhotoBlob) return;
+
+            const now = new Date();
+            const ts = now.getFullYear() +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0') + '_' +
+                String(now.getHours()).padStart(2, '0') +
+                String(now.getMinutes()).padStart(2, '0') +
+                String(now.getSeconds()).padStart(2, '0');
+            const filename = `Nspira_${photoCount}_${ts}.jpg`;
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(currentPhotoBlob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+            statusMsg.innerHTML = `<span class="ready">✅ Downloaded: ${filename}</span>`;
+        }
+
+        // ============================================================
+        // Switch camera
+        // ============================================================
+        async function switchCamera() {
+            const newMode = (facingMode === 'environment') ? 'user' : 'environment';
+            facingMode = newMode;
+            await startCamera(facingMode);
+        }
+
+        // ============================================================
+        // Event Listeners
+        // ============================================================
+        captureBtn.addEventListener('click', capturePhoto);
+        downloadBtn.addEventListener('click', downloadPhoto);
+        switchBtn.addEventListener('click', switchCamera);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                captureBtn.click();
+            }
+            if (e.key === 'd' || e.key === 'D') {
+                downloadBtn.click();
+            }
+            if (e.key === 's' || e.key === 'S') {
+                switchBtn.click();
+            }
+        });
+
+        // ============================================================
+        // Initialize
+        // ============================================================
+        async function init() {
+            startGeolocation();
+            await startCamera('environment');
+        }
+
+        init();
+
+        console.log('📸 Nspira Camera App loaded!');
+        console.log('🏢 Stamped image style matches reference:');
+        console.log('   - Company name (red)');
+        console.log('   - Address (light blue)');
+        console.log('   - GPS coordinates (green)');
+        console.log('   - Date/Time with seconds (yellow)');
+        console.log('   - Count label (NSP-1, NSP-2...)');
+        console.log('   - "NSPIRA" watermark at bottom-right');
+    </script>
+</body>
+</html>
