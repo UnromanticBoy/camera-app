@@ -206,11 +206,16 @@
             .info-div .company-name { font-size: 14px; }
             .info-div .company-name .icon img { width: 28px; height: 28px; }
         }
-        .photo-stamping-title {
-    font-size: 24px;
+ .company-title {
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: 20px;
+}
+
+.nspira-logo {
+    width: 150px;
+    height: auto;
 }
     </style>
 </head>
@@ -218,11 +223,12 @@
 
     <div class="container">
         <div class="header">
-            <h1 class="photo-stamping-title">
-    <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo">
-    Nspira Photo Stamping
-</h1>
-        </div>
+            <h1 class="company-title">
+    <img src="https://mynspira.in/assets/images/logo-light.png" 
+        alt="Nspira Logo"
+        class="nspira-logo">
+    <span>Nspira Photo Stamping</span>
+</h1>        </div>
 
         <div class="info-div" id="infoDiv">
             <!-- ✅ FIX #4 & #5: proper flex row, larger logo, text stays on one line -->
