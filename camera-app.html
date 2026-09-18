@@ -61,7 +61,6 @@
         .info-div .divider { color: #444; margin: 0 4px; }
         .info-div .icon { margin-right: 6px; }
 
-        /* Video: use natural camera aspect ratio via JS-set height */
         .video-wrapper {
             position: relative;
             background: #0f0f23;
@@ -101,8 +100,6 @@
         .btn-download { background: #0f3460; color: white; }
         .btn-download:hover { background: #1a4a7a; }
         .btn-download:disabled { background: #444; color: #888; cursor: not-allowed; }
-        .btn-reset { background: #7a1f1f; color: white; }
-        .btn-reset:hover { background: #a12a2a; }
 
         .preview-wrapper {
             margin-top: 16px;
@@ -137,7 +134,6 @@
         }
         .flash.active { opacity: 0.8; }
 
-        /* iOS Save overlay */
         .ios-overlay {
             display: none;
             position: fixed;
@@ -202,9 +198,7 @@
             <div class="time-line" id="timeLine">
                 <span class="icon">🕐</span> Date &amp; Time: <span id="dateTimeDisplay">--/--/---- --:--:-- --</span>
             </div>
-            <div class="time-line" style="color:#9cd6ff;font-size:12px;margin-top:2px;">
-                <span class="icon">🔢</span> Next Serial: <span id="serialDisplay">NSP-1</span>
-            </div>
+            <!-- Reset & Next Serial removed from UI per request -->
         </div>
 
         <div class="video-wrapper" id="videoWrapper">
@@ -216,7 +210,7 @@
             <button class="btn-capture" id="captureBtn">📷 Capture</button>
             <button class="btn-switch" id="switchBtn">🔄 Switch</button>
             <button class="btn-download" id="downloadBtn" disabled>⬇️ Download</button>
-            <button class="btn-reset" id="resetBtn">🔄 Reset</button>
+            <!-- Reset button removed from UI -->
         </div>
 
         <div class="status-msg" id="statusMsg">
@@ -229,7 +223,6 @@
         </div>
     </div>
 
-    <!-- iOS Save overlay -->
     <div class="ios-overlay" id="iosOverlay">
         <img id="iosOverlayImg" alt="Save this image" />
         <div class="hint">
@@ -252,12 +245,13 @@
             countPrefix: 'NSP-',
             timeFormat: '12hr',
             countFontSize: 32,
+            // Max address lines drawn on the stamp (kept within 3-4 lines)
+            addressMaxLines: 4,
+            // Max characters per address line (word-safe wrapping)
+            addressCharsPerLine: 55,
             // Database endpoint — leave empty to disable upload
-            // Example: 'https://api.yourdomain.com/nspira/photos'
             dbUploadUrl: '',
-            // Optional API key/token if your backend requires one
             dbApiKey: '',
-            // localStorage keys
             lsSerialKey: 'nspira_serial_count',
         };
 
@@ -269,7 +263,6 @@
         const captureBtn = document.getElementById('captureBtn');
         const switchBtn = document.getElementById('switchBtn');
         const downloadBtn = document.getElementById('downloadBtn');
-        const resetBtn = document.getElementById('resetBtn');
         const previewWrapper = document.getElementById('previewWrapper');
         const previewImage = document.getElementById('previewImage');
         const flash = document.getElementById('flash');
@@ -279,7 +272,6 @@
         const fullAddress = document.getElementById('fullAddress');
         const dateTimeDisplay = document.getElementById('dateTimeDisplay');
         const mapLink = document.getElementById('mapLink');
-        const serialDisplay = document.getElementById('serialDisplay');
 
         const iosOverlay = document.getElementById('iosOverlay');
         const iosOverlayImg = document.getElementById('iosOverlayImg');
@@ -293,36 +285,28 @@
         let facingMode = 'environment';
         let photoCount = parseInt(localStorage.getItem(CONFIG.lsSerialKey) || '0', 10);
         let currentPhotoBlob = null;
-        let currentPhotoSerial = 0; // serial for currently-previewed photo (not yet committed)
-        let serialCommitted = false; // true once downloaded
+        let currentPhotoSerial = 0;
+        let serialCommitted = false;
         let currentGPS = { lat: null, lng: null, accuracy: null, address: 'Detecting address...' };
         let watchId = null;
 
-        // iOS detection
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
         // ============================================================
         // Serial helpers
         // ============================================================
-        function getNextSerialNumber() {
-            return photoCount + 1;
-        }
-
-        function updateSerialDisplay() {
-            serialDisplay.textContent = `${CONFIG.countPrefix}${getNextSerialNumber()}`;
-        }
+        function getNextSerialNumber() { return photoCount + 1; }
 
         function commitSerial() {
             if (serialCommitted) return;
             photoCount++;
             localStorage.setItem(CONFIG.lsSerialKey, String(photoCount));
             serialCommitted = true;
-            updateSerialDisplay();
         }
 
         // ============================================================
-        // Format date/time in 12hr format with seconds
+        // Format date/time
         // ============================================================
         function formatDateTime12hr(now) {
             const d = now || new Date();
@@ -338,27 +322,22 @@
             return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
         }
 
-        // Get short timezone name (e.g. IST, EST, PST)
         function getTimezoneAbbr() {
             try {
                 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
                 const parts = new Intl.DateTimeFormat('en-US', {
-                    timeZoneName: 'short',
-                    timeZone: tz
+                    timeZoneName: 'short', timeZone: tz
                 }).formatToParts(new Date());
                 const tzPart = parts.find(p => p.type === 'timeZoneName');
                 return tzPart ? tzPart.value : tz;
-            } catch {
-                return '';
-            }
+            } catch { return ''; }
         }
 
         // ============================================================
-        // Update the info div
+        // Update info div
         // ============================================================
         function updateInfoDiv() {
             dateTimeDisplay.textContent = formatDateTime12hr();
-
             if (currentGPS.lat !== null && currentGPS.lng !== null) {
                 const latStr = currentGPS.lat.toFixed(6);
                 const lngStr = currentGPS.lng.toFixed(6);
@@ -374,26 +353,20 @@
 
         setInterval(updateInfoDiv, 1000);
         updateInfoDiv();
-        updateSerialDisplay();
 
         // ============================================================
-        // Reverse Geocoding — FULL ADDRESS, FORCED ENGLISH
+        // Reverse Geocoding (English, full address)
         // ============================================================
         function isEnglishText(str) {
             if (!str) return false;
-            // Allow Latin letters, digits, common punctuation & spaces
             return /^[\x00-\x7F\s,.\-#/()&'":;°]+$/.test(str);
         }
 
         function buildFullAddress(addr, displayName) {
-            // Build a detailed address: H.No/Building, Road, Area, Suburb, City, State, Postcode, Country
             const parts = [];
             const push = (v) => {
-                if (v && typeof v === 'string' && v.trim() && isEnglishText(v)) {
-                    parts.push(v.trim());
-                }
+                if (v && typeof v === 'string' && v.trim() && isEnglishText(v)) parts.push(v.trim());
             };
-
             push(addr.house_number);
             push(addr.building);
             push(addr.amenity);
@@ -406,28 +379,18 @@
             push(addr.state);
             push(addr.postcode);
             push(addr.country);
-
             let result = parts.filter(Boolean).join(', ');
-
-            // If we didn't get enough detail, fall back to display_name (English only)
-            if (result.length < 25 && displayName && isEnglishText(displayName)) {
-                result = displayName;
-            }
+            if (result.length < 25 && displayName && isEnglishText(displayName)) result = displayName;
             return result || 'Location not found';
         }
 
         async function getLocationName(lat, lng) {
             try {
-                // Force English: accept-language=en and &accept-language=en
                 const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=en`;
                 const response = await fetch(url, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Accept-Language': 'en'
-                    }
+                    headers: { 'Accept': 'application/json', 'Accept-Language': 'en' }
                 });
                 const data = await response.json();
-
                 if (data && data.address) {
                     currentGPS.address = buildFullAddress(data.address, data.display_name);
                 } else if (data && data.display_name && isEnglishText(data.display_name)) {
@@ -452,7 +415,6 @@
                 fullAddress.textContent = 'GPS not supported';
                 return;
             }
-
             navigator.geolocation.getCurrentPosition(
                 async (pos) => {
                     currentGPS.lat = pos.coords.latitude;
@@ -462,7 +424,7 @@
                     await getLocationName(currentGPS.lat, currentGPS.lng);
                     updateInfoDiv();
                 },
-                (err) => {
+                () => {
                     gpsCoords.textContent = `❌ GPS error`;
                     fullAddress.textContent = 'Location unavailable';
                 },
@@ -472,17 +434,14 @@
             if (watchId !== null) navigator.geolocation.clearWatch(watchId);
             watchId = navigator.geolocation.watchPosition(
                 async (pos) => {
-                    // FIXED operator precedence bug
                     const moved = currentGPS.lat !== null && (
                         Math.abs(pos.coords.latitude - currentGPS.lat) > 0.0003 ||
                         Math.abs(pos.coords.longitude - currentGPS.lng) > 0.0003
                     );
-
                     currentGPS.lat = pos.coords.latitude;
                     currentGPS.lng = pos.coords.longitude;
                     currentGPS.accuracy = pos.coords.accuracy;
                     updateInfoDiv();
-
                     if (moved) {
                         await getLocationName(currentGPS.lat, currentGPS.lng);
                         updateInfoDiv();
@@ -494,41 +453,28 @@
         }
 
         // ============================================================
-        // Camera setup — set proper aspect ratio
+        // Camera
         // ============================================================
         function setVideoAspect(vw, vh) {
             if (!vw || !vh) return;
-            const ratio = vw / vh;
             videoWrapper.style.aspectRatio = `${vw} / ${vh}`;
-            console.log(`📐 Video aspect ratio set to ${ratio.toFixed(3)} (${vw}x${vh})`);
         }
 
         async function startCamera(faceMode) {
             try {
                 if (stream) stream.getTracks().forEach(t => t.stop());
-
                 const constraints = {
-                    video: {
-                        facingMode: faceMode,
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 },
-                    },
+                    video: { facingMode: faceMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
                     audio: false,
                 };
-
                 stream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = stream;
                 await video.play();
-
-                // Sync wrapper aspect ratio to camera's natural ratio
                 const sync = () => {
-                    if (video.videoWidth && video.videoHeight) {
-                        setVideoAspect(video.videoWidth, video.videoHeight);
-                    }
+                    if (video.videoWidth && video.videoHeight) setVideoAspect(video.videoWidth, video.videoHeight);
                 };
                 if (video.readyState >= 1) sync();
                 video.onloadedmetadata = sync;
-
                 statusMsg.innerHTML = `<span class="ready">✅ Camera ready (${faceMode === 'environment' ? 'Rear' : 'Front'})</span>`;
                 return true;
             } catch (err) {
@@ -539,27 +485,48 @@
         }
 
         // ============================================================
-        // Canvas text wrapping helper
+        // Word-safe wrapping by character budget (3–4 clean lines)
+        // Never breaks a word across lines.
         // ============================================================
-        function wrapText(ctx, text, maxWidth) {
-            const words = text.split(' ');
+        function wrapByCharBudget(text, charsPerLine, maxLines) {
+            const words = String(text).split(/\s+/).filter(Boolean);
             const lines = [];
-            let line = '';
+            let current = '';
+
             for (const word of words) {
-                const test = line ? line + ' ' + word : word;
-                if (ctx.measureText(test).width > maxWidth && line) {
-                    lines.push(line);
-                    line = word;
+                // If a single word is longer than budget, keep it whole on its own line
+                const candidate = current ? current + ' ' + word : word;
+                if (candidate.length <= charsPerLine) {
+                    current = candidate;
                 } else {
-                    line = test;
+                    if (current) lines.push(current);
+                    // If word itself exceeds budget, still push it as its own line (never break it)
+                    current = word;
                 }
             }
-            if (line) lines.push(line);
+            if (current) lines.push(current);
+
+            // If more lines than allowed, merge overflow into the last allowed line, but keep word-safe
+            if (lines.length > maxLines) {
+                const head = lines.slice(0, maxLines - 1);
+                const tail = lines.slice(maxLines - 1).join(' ');
+                // Tail might exceed budget; trim by whole words
+                const tailWords = tail.split(' ');
+                let trimmed = '';
+                for (const w of tailWords) {
+                    const test = trimmed ? trimmed + ' ' + w : w;
+                    if (test.length > charsPerLine) break;
+                    trimmed = test;
+                }
+                if (trimmed !== tail) trimmed = trimmed.replace(/,?\s*$/, '') + '…';
+                head.push(trimmed);
+                return head;
+            }
             return lines;
         }
 
         // ============================================================
-        // Capture photo — proper aspect ratio, full English address
+        // Capture photo
         // ============================================================
         function capturePhoto() {
             if (!stream) { alert('Camera not ready.'); return; }
@@ -567,7 +534,6 @@
             flash.classList.add('active');
             setTimeout(() => flash.classList.remove('active'), 150);
 
-            // Serial number for THIS photo (not yet committed)
             currentPhotoSerial = getNextSerialNumber();
             serialCommitted = false;
             const countLabel = `${CONFIG.countPrefix}${currentPhotoSerial}`;
@@ -584,11 +550,9 @@
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
-            // ---- 1. Use camera's NATURAL dimensions (proper ratio) ----
             const vw = video.videoWidth || 1280;
             const vh = video.videoHeight || 720;
 
-            // Base font sizes proportional to width (so it scales on high-res)
             const base = Math.max(vw / 1000, 0.6);
             const fsCompany = Math.round(20 * base);
             const fsAddress = Math.round(15 * base);
@@ -597,20 +561,16 @@
             const fsCount   = Math.round(CONFIG.countFontSize * base);
             const fsWater   = Math.round(13 * base);
 
-            // ---- 2. Calculate stamp area height based on wrapped address ----
             const padX = Math.round(22 * base);
             const padTop = Math.round(14 * base);
             const lineGap = Math.round(6 * base);
 
-            ctx.font = `${fsAddress}px 'Arial', 'Helvetica', sans-serif`;
-            const maxAddressWidth = vw - padX * 2 - Math.round(120 * base); // leave room for serial on right
-            const addressLines = wrapText(ctx, `📍 ${address}`, maxAddressWidth);
-            const maxAddrLines = 3; // cap to keep stamp tidy
-            const addressLinesUsed = addressLines.slice(0, maxAddrLines);
-            if (addressLines.length > maxAddrLines) {
-                const last = addressLinesUsed[maxAddrLines - 1];
-                addressLinesUsed[maxAddrLines - 1] = last.slice(0, Math.max(0, last.length - 1)) + '…';
-            }
+            // ---- Word-safe wrapping into 3-4 lines ----
+            const addressLinesUsed = wrapByCharBudget(
+                `📍 ${address}`,
+                CONFIG.addressCharsPerLine,
+                CONFIG.addressMaxLines
+            );
 
             const stampHeight = padTop
                 + fsCompany + lineGap
@@ -622,10 +582,10 @@
             canvas.width = vw;
             canvas.height = vh + stampHeight;
 
-            // ---- 3. Draw video frame ----
+            // Draw video frame
             ctx.drawImage(video, 0, 0, vw, vh);
 
-            // ---- 4. Stamp background ----
+            // Stamp bg
             const stampY = vh;
             const gradient = ctx.createLinearGradient(0, stampY, 0, stampY + stampHeight);
             gradient.addColorStop(0, 'rgba(0,0,0,0.92)');
@@ -642,7 +602,7 @@
 
             let y = stampY + padTop;
 
-            // ---- 5. Company name ----
+            // Company
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
@@ -653,7 +613,7 @@
             ctx.fillText(`🏢 ${CONFIG.companyName}`, padX, y);
             y += fsCompany + lineGap;
 
-            // ---- 6. Full address (wrapped, multi-line) ----
+            // Address (multi-line, word-safe)
             ctx.font = `${fsAddress}px 'Arial', 'Helvetica', sans-serif`;
             ctx.fillStyle = '#aac8ff';
             ctx.shadowBlur = 3 * base;
@@ -662,20 +622,20 @@
                 y += fsAddress + lineGap;
             }
 
-            // ---- 7. GPS coords ----
+            // GPS
             ctx.font = `${fsGPS}px 'Courier New', monospace`;
             ctx.fillStyle = '#8bc34a';
             ctx.shadowBlur = 3 * base;
             ctx.fillText(`Lat ${latStr}   Long ${lngStr}`, padX, y);
             y += fsGPS + lineGap;
 
-            // ---- 8. Date & time with real timezone ----
+            // Time
             ctx.font = `${fsTime}px 'Courier New', monospace`;
             ctx.fillStyle = '#ffd54f';
             ctx.shadowBlur = 3 * base;
             ctx.fillText(`🕐 ${timestamp}  ${tzAbbr}`, padX, y);
 
-            // ---- 9. Serial number (top-right of stamp) ----
+            // Serial (top-right, faded)
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
@@ -683,41 +643,35 @@
             ctx.shadowBlur = 0;
             ctx.fillText(countLabel, vw - padX, stampY + padTop);
 
-            // ---- 10. NSPIRA watermark bottom-right ----
+            // Watermark
             ctx.textBaseline = 'bottom';
             ctx.font = `${fsWater}px 'Courier New', monospace`;
             ctx.fillStyle = 'rgba(255,255,255,0.22)';
             ctx.fillText('NSPIRA', vw - padX, stampY + stampHeight - Math.round(8 * base));
 
-            // Reset shadow
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
 
-            // ---- 11. Export ----
             canvas.toBlob((blob) => {
                 if (!blob) { alert('Failed to capture image.'); return; }
                 currentPhotoBlob = blob;
-
                 const url = URL.createObjectURL(blob);
                 previewImage.src = url;
                 previewWrapper.style.display = 'block';
-
                 downloadBtn.disabled = false;
-                statusMsg.innerHTML = `<span class="ready">✅ Captured (preview ${countLabel}). Press Download to save &amp; advance serial.</span>`;
+                statusMsg.innerHTML = `<span class="ready">✅ Captured. Press Download to save.</span>`;
             }, 'image/jpeg', 0.92);
         }
 
         // ============================================================
-        // Database upload — PROVISION (stub)
+        // DB upload (provision)
         // ============================================================
         async function uploadToDatabase(blob, meta) {
-            // If DB endpoint not configured, skip silently
             if (!CONFIG.dbUploadUrl) {
                 console.log('ℹ️ DB upload skipped (no endpoint configured). Payload ready:', meta);
                 return { success: false, reason: 'no-endpoint' };
             }
-
             try {
                 const form = new FormData();
                 form.append('photo', blob, meta.filename);
@@ -732,12 +686,7 @@
                 const headers = {};
                 if (CONFIG.dbApiKey) headers['Authorization'] = `Bearer ${CONFIG.dbApiKey}`;
 
-                const res = await fetch(CONFIG.dbUploadUrl, {
-                    method: 'POST',
-                    headers,
-                    body: form,
-                });
-
+                const res = await fetch(CONFIG.dbUploadUrl, { method: 'POST', headers, body: form });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const json = await res.json().catch(() => ({}));
                 console.log('✅ DB upload success:', json);
@@ -749,7 +698,7 @@
         }
 
         // ============================================================
-        // Download — commit serial, upload to DB
+        // Download
         // ============================================================
         async function downloadPhoto() {
             if (!currentPhotoBlob) return;
@@ -763,15 +712,11 @@
                 String(now.getSeconds()).padStart(2, '0');
             const filename = `Nspira_${currentPhotoSerial}_${ts}.jpg`;
 
-            // ---- 1. Commit the serial NOW (before saving) ----
             commitSerial();
 
-            // ---- 2. Save on device ----
             if (isIOS || (isSafari && !window.MSStream)) {
-                // iOS/Safari: open overlay with long-press save + Share API
                 showIOSOverlay(filename);
             } else {
-                // Android/Desktop: standard anchor download
                 try {
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(currentPhotoBlob);
@@ -787,7 +732,6 @@
                 }
             }
 
-            // ---- 3. Upload to DB (fire & forget) ----
             const meta = {
                 filename,
                 serial: currentPhotoSerial,
@@ -799,26 +743,22 @@
             uploadToDatabase(currentPhotoBlob, meta).then((result) => {
                 if (result.success) {
                     statusMsg.innerHTML += `<br /><span class="ready">☁️ Uploaded to database.</span>`;
-                } else if (result.reason === 'no-endpoint') {
-                    // silent
-                } else {
+                } else if (result.reason !== 'no-endpoint') {
                     statusMsg.innerHTML += `<br /><span class="warn">⚠️ DB upload failed: ${result.reason}</span>`;
                 }
             });
 
-            // ---- 4. Reset preview state so next capture uses new serial ----
             setTimeout(() => {
                 downloadBtn.disabled = true;
                 previewWrapper.style.display = 'none';
                 previewImage.src = '';
                 currentPhotoBlob = null;
                 serialCommitted = false;
-                updateSerialDisplay();
             }, 1500);
         }
 
         // ============================================================
-        // iOS overlay (long-press to save + Web Share API)
+        // iOS overlay
         // ============================================================
         function showIOSOverlay(filename) {
             const url = URL.createObjectURL(currentPhotoBlob);
@@ -836,49 +776,38 @@
             if (!currentPhotoBlob) return;
             const filename = iosOverlay.dataset.filename || 'Nspira.jpg';
             const file = new File([currentPhotoBlob], filename, { type: 'image/jpeg' });
-
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Nspira Photo',
-                        text: 'Nspira stamped photo',
-                    });
+                    await navigator.share({ files: [file], title: 'Nspira Photo', text: 'Nspira stamped photo' });
                     statusMsg.innerHTML = `<span class="ready">✅ Shared/saved.</span>`;
-                } catch (e) {
-                    console.warn('Share cancelled:', e);
-                }
+                } catch (e) { console.warn('Share cancelled:', e); }
             } else {
                 alert('Long-press the image, then choose "Save to Photos".');
             }
         });
 
         // ============================================================
-        // Reset button — reset serial to 1
+        // RESET — backend only (no UI button)
+        // Call from console / backend trigger:  window.nspiraReset()
         // ============================================================
         async function resetSerial() {
-            const ok = confirm('Reset serial number to NSP-1?\nThis will not delete already-downloaded photos.');
-            if (!ok) return;
-
             photoCount = 0;
             serialCommitted = false;
             localStorage.setItem(CONFIG.lsSerialKey, '0');
-            updateSerialDisplay();
 
-            // Optional DB reset hook
             if (CONFIG.dbUploadUrl) {
                 try {
                     await fetch(CONFIG.dbUploadUrl.replace(/\/photos\/?$/, '/reset'), {
                         method: 'POST',
                         headers: CONFIG.dbApiKey ? { Authorization: `Bearer ${CONFIG.dbApiKey}` } : {},
                     });
-                } catch (e) {
-                    console.warn('DB reset failed:', e);
-                }
+                } catch (e) { console.warn('DB reset failed:', e); }
             }
-
-            statusMsg.innerHTML = `<span class="ready">✅ Serial reset. Next: NSP-1</span>`;
+            statusMsg.innerHTML = `<span class="ready">✅ Serial reset. Next capture: NSP-1</span>`;
+            console.log('🔄 Serial reset to 0. Next serial: NSP-1');
         }
+        // Expose to backend / console only
+        window.nspiraReset = resetSerial;
 
         // ============================================================
         // Switch camera
@@ -889,12 +818,11 @@
         }
 
         // ============================================================
-        // Event Listeners
+        // Event listeners
         // ============================================================
         captureBtn.addEventListener('click', capturePhoto);
         downloadBtn.addEventListener('click', downloadPhoto);
         switchBtn.addEventListener('click', switchCamera);
-        resetBtn.addEventListener('click', resetSerial);
 
         document.addEventListener('keydown', (e) => {
             if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); captureBtn.click(); }
@@ -903,10 +831,9 @@
         });
 
         // ============================================================
-        // Initialize
+        // Init
         // ============================================================
         async function init() {
-            // HTTPS check (getUserMedia requires secure context)
             if (!window.isSecureContext) {
                 statusMsg.innerHTML = `<span class="error">❌ Camera requires HTTPS. Please open via https://</span>`;
                 return;
@@ -914,11 +841,11 @@
             startGeolocation();
             await startCamera('environment');
         }
-
         init();
 
         console.log('📸 Nspira Camera App loaded!');
-        console.log('ℹ️ iOS detected:', isIOS, '| Safari:', isSafari);
+        console.log('ℹ️ iOS:', isIOS, '| Safari:', isSafari);
+        console.log('ℹ️ To reset serial from backend/console: window.nspiraReset()');
     </script>
 </body>
 </html>
