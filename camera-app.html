@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Nspira Camera - Photo Stamping</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -17,9 +15,10 @@
             color: white;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             padding: 16px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .container {
@@ -38,15 +37,8 @@
             border-bottom: 2px solid #e94560;
         }
 
-        .header h1 {
-            font-size: 18px;
-            color: #e94560;
-            font-weight: 700;
-        }
+        .header h1 { font-size: 18px; color: #e94560; font-weight: 700; }
 
-        /* ============================================================ */
-        /* NON-EDITABLE INFO DIV */
-        /* ============================================================ */
         .info-div {
             background: #0f0f23;
             border-radius: 12px;
@@ -60,120 +52,58 @@
             -webkit-user-select: none;
             pointer-events: none;
         }
+        .info-div .company-name { color: #e94560; font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
+        .info-div .gps-line { color: #4fc3f7; font-size: 13px; font-weight: 500; }
+        .info-div .gps-line .map-link { color: #4fc3f7; text-decoration: none; pointer-events: auto; cursor: pointer; }
+        .info-div .gps-line .map-link:hover { text-decoration: underline; }
+        .info-div .address-line { color: #aac8ff; font-size: 12px; margin-top: 4px; }
+        .info-div .time-line { color: #ffd54f; font-size: 14px; font-weight: 600; }
+        .info-div .divider { color: #444; margin: 0 4px; }
+        .info-div .icon { margin-right: 6px; }
 
-        .info-div .company-name {
-            color: #e94560;
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .info-div .gps-line {
-            color: #4fc3f7;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .info-div .gps-line .map-link {
-            color: #4fc3f7;
-            text-decoration: none;
-            pointer-events: auto;
-            cursor: pointer;
-        }
-
-        .info-div .gps-line .map-link:hover {
-            text-decoration: underline;
-        }
-
-        .info-div .time-line {
-            color: #ffd54f;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .info-div .divider {
-            color: #444;
-            margin: 0 4px;
-        }
-
-        .info-div .icon {
-            margin-right: 6px;
-        }
-
+        /* Video: use natural camera aspect ratio via JS-set height */
         .video-wrapper {
             position: relative;
             background: #0f0f23;
             border-radius: 12px;
             overflow: hidden;
+            width: 100%;
             aspect-ratio: 4 / 3;
             display: flex;
             align-items: center;
             justify-content: center;
         }
+        #video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        #video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        /* Controls */
         .controls {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             margin-top: 16px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .controls button {
-            padding: 12px 24px;
+            padding: 12px 20px;
             border: none;
             border-radius: 50px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             flex: 1;
-            min-width: 100px;
+            min-width: 90px;
         }
+        .btn-capture { background: #e94560; color: white; }
+        .btn-capture:hover { background: #c73652; transform: scale(1.02); }
+        .btn-switch { background: #533483; color: white; }
+        .btn-switch:hover { background: #6a4b9e; }
+        .btn-download { background: #0f3460; color: white; }
+        .btn-download:hover { background: #1a4a7a; }
+        .btn-download:disabled { background: #444; color: #888; cursor: not-allowed; }
+        .btn-reset { background: #7a1f1f; color: white; }
+        .btn-reset:hover { background: #a12a2a; }
 
-        .btn-capture {
-            background: #e94560;
-            color: white;
-        }
-
-        .btn-capture:hover {
-            background: #c73652;
-            transform: scale(1.02);
-        }
-
-        .btn-switch {
-            background: #533483;
-            color: white;
-        }
-
-        .btn-switch:hover {
-            background: #6a4b9e;
-        }
-
-        .btn-download {
-            background: #0f3460;
-            color: white;
-        }
-
-        .btn-download:hover {
-            background: #1a4a7a;
-        }
-
-        .btn-download:disabled {
-            background: #444;
-            color: #888;
-            cursor: not-allowed;
-        }
-
-        /* Preview after capture */
         .preview-wrapper {
             margin-top: 16px;
             display: none;
@@ -182,102 +112,81 @@
             border: 2px solid #e94560;
             position: relative;
         }
-
-        .preview-wrapper img {
-            width: 100%;
-            display: block;
+        .preview-wrapper img { width: 100%; display: block; }
+        .preview-label {
+            position: absolute; bottom: 10px; right: 12px;
+            color: rgba(255,255,255,0.5); font-size: 11px;
+            font-family: 'Courier New', monospace;
+            background: rgba(0,0,0,0.5); padding: 2px 10px;
+            border-radius: 4px; pointer-events: none;
         }
+
+        .status-msg {
+            margin-top: 12px; text-align: center; font-size: 13px;
+            color: #888; padding: 8px; border-radius: 8px;
+            background: #0f0f23;
+            user-select: none; -webkit-user-select: none;
+        }
+        .status-msg .ready { color: #4caf50; }
+        .status-msg .error { color: #e94560; }
+        .status-msg .warn { color: #ffb74d; }
+
+        .flash {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: white; opacity: 0; pointer-events: none; transition: opacity 0.1s;
+        }
+        .flash.active { opacity: 0.8; }
+
+        /* iOS Save overlay */
+        .ios-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .ios-overlay.active { display: flex; }
+        .ios-overlay img { max-width: 100%; max-height: 70vh; border-radius: 12px; border: 2px solid #e94560; }
+        .ios-overlay .hint {
+            color: #fff; margin-top: 20px; font-size: 15px; text-align: center;
+            line-height: 1.6;
+        }
+        .ios-overlay .hint strong { color: #ffd54f; }
+        .ios-overlay .close-btn {
+            margin-top: 20px; padding: 12px 30px; border-radius: 50px;
+            background: #e94560; color: white; border: none;
+            font-size: 15px; font-weight: 600; cursor: pointer;
+        }
+        .ios-overlay .action-row {
+            display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; justify-content: center;
+        }
+        .ios-overlay .action-row button {
+            padding: 12px 24px; border-radius: 50px; border: none;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+        }
+        .ios-overlay .btn-share { background: #0f3460; color: white; }
+        .ios-overlay .btn-save { background: #4caf50; color: white; }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 12px;
-            }
-
-            .controls button {
-                font-size: 13px;
-                padding: 10px 16px;
-                min-width: 70px;
-            }
-
-            .header h1 {
-                font-size: 15px;
-            }
-
-            .info-div {
-                font-size: 11px;
-                padding: 10px;
-                line-height: 1.6;
-            }
-
-            .info-div .company-name {
-                font-size: 14px;
-            }
-        }
-
-        /* Flash animation */
-        .flash {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: white;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.1s;
-        }
-
-        .flash.active {
-            opacity: 0.8;
-        }
-
-        /* Status message */
-        .status-msg {
-            margin-top: 12px;
-            text-align: center;
-            font-size: 13px;
-            color: #888;
-            padding: 8px;
-            border-radius: 8px;
-            background: #0f0f23;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        .status-msg .ready {
-            color: #4caf50;
-        }
-
-        .status-msg .error {
-            color: #e94560;
-        }
-
-        /* Preview watermark */
-        .preview-label {
-            position: absolute;
-            bottom: 10px;
-            right: 12px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 11px;
-            font-family: 'Courier New', monospace;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 2px 10px;
-            border-radius: 4px;
-            pointer-events: none;
+            .container { padding: 12px; }
+            .controls button { font-size: 12px; padding: 10px 12px; min-width: 70px; }
+            .header h1 { font-size: 15px; }
+            .info-div { font-size: 11px; padding: 10px; line-height: 1.6; }
+            .info-div .company-name { font-size: 14px; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-
         <div class="header">
             <h1>📸 Nspira Photo Stamping</h1>
         </div>
 
-        <!-- ========================================================== -->
-        <!-- NON-EDITABLE INFO DIV -->
-        <!-- ========================================================== -->
         <div class="info-div" id="infoDiv">
             <div class="company-name">
                 <span class="icon">🏢</span> Nspira Mgmt Services Pvt Ltd
@@ -285,39 +194,53 @@
             <div class="gps-line" id="gpsLine">
                 <span class="icon">📍</span> GPS: <span id="gpsCoords">Waiting for GPS...</span>
                 <span class="divider">|</span>
-                <span id="gpsLocation">Detecting location...</span>
-                <span class="divider">|</span>
-                <a href="#" id="mapLink" class="map-link" target="_blank">🗺️ View Map</a>
+                <a href="#" id="mapLink" class="map-link" target="_blank" rel="noopener">🗺️ View Map</a>
+            </div>
+            <div class="address-line" id="addressLine">
+                <span class="icon">🏠</span> <span id="fullAddress">Detecting address...</span>
             </div>
             <div class="time-line" id="timeLine">
                 <span class="icon">🕐</span> Date &amp; Time: <span id="dateTimeDisplay">--/--/---- --:--:-- --</span>
             </div>
+            <div class="time-line" style="color:#9cd6ff;font-size:12px;margin-top:2px;">
+                <span class="icon">🔢</span> Next Serial: <span id="serialDisplay">NSP-1</span>
+            </div>
         </div>
 
-        <!-- Video Feed -->
-        <div class="video-wrapper">
-            <video id="video" autoplay playsinline></video>
+        <div class="video-wrapper" id="videoWrapper">
+            <video id="video" autoplay playsinline muted></video>
             <div class="flash" id="flash"></div>
         </div>
 
-        <!-- Controls -->
         <div class="controls">
             <button class="btn-capture" id="captureBtn">📷 Capture</button>
             <button class="btn-switch" id="switchBtn">🔄 Switch</button>
             <button class="btn-download" id="downloadBtn" disabled>⬇️ Download</button>
+            <button class="btn-reset" id="resetBtn">🔄 Reset</button>
         </div>
 
-        <!-- Status -->
         <div class="status-msg" id="statusMsg">
             <span class="ready">✅ Camera ready</span>
         </div>
 
-        <!-- Preview -->
         <div class="preview-wrapper" id="previewWrapper">
             <img id="previewImage" alt="Captured preview" />
             <div class="preview-label">NSPIRA</div>
         </div>
+    </div>
 
+    <!-- iOS Save overlay -->
+    <div class="ios-overlay" id="iosOverlay">
+        <img id="iosOverlayImg" alt="Save this image" />
+        <div class="hint">
+            <strong>iOS Detected</strong><br />
+            Long-press the image above and choose <strong>"Save to Photos"</strong><br />
+            or tap <strong>Share</strong> to save/share.
+        </div>
+        <div class="action-row">
+            <button class="btn-save" id="iosSaveBtn">💾 Share / Save</button>
+            <button class="close-btn" id="iosCloseBtn">✕ Close</button>
+        </div>
     </div>
 
     <script>
@@ -328,57 +251,106 @@
             companyName: 'Nspira Mgmt Services Pvt Ltd',
             countPrefix: 'NSP-',
             timeFormat: '12hr',
-            // Font settings for the stamp
-            stampFontSize: 16,
             countFontSize: 32,
+            // Database endpoint — leave empty to disable upload
+            // Example: 'https://api.yourdomain.com/nspira/photos'
+            dbUploadUrl: '',
+            // Optional API key/token if your backend requires one
+            dbApiKey: '',
+            // localStorage keys
+            lsSerialKey: 'nspira_serial_count',
         };
 
         // ============================================================
         // DOM References
         // ============================================================
         const video = document.getElementById('video');
+        const videoWrapper = document.getElementById('videoWrapper');
         const captureBtn = document.getElementById('captureBtn');
         const switchBtn = document.getElementById('switchBtn');
         const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const previewWrapper = document.getElementById('previewWrapper');
         const previewImage = document.getElementById('previewImage');
         const flash = document.getElementById('flash');
         const statusMsg = document.getElementById('statusMsg');
 
         const gpsCoords = document.getElementById('gpsCoords');
-        const gpsLocation = document.getElementById('gpsLocation');
+        const fullAddress = document.getElementById('fullAddress');
         const dateTimeDisplay = document.getElementById('dateTimeDisplay');
         const mapLink = document.getElementById('mapLink');
+        const serialDisplay = document.getElementById('serialDisplay');
+
+        const iosOverlay = document.getElementById('iosOverlay');
+        const iosOverlayImg = document.getElementById('iosOverlayImg');
+        const iosCloseBtn = document.getElementById('iosCloseBtn');
+        const iosSaveBtn = document.getElementById('iosSaveBtn');
 
         // ============================================================
         // State
         // ============================================================
         let stream = null;
         let facingMode = 'environment';
-        let photoCount = 0;
+        let photoCount = parseInt(localStorage.getItem(CONFIG.lsSerialKey) || '0', 10);
         let currentPhotoBlob = null;
-        let currentGPS = { lat: null, lng: null, accuracy: null, address: 'Detecting location...' };
-        let lastLocationFetch = 0;
+        let currentPhotoSerial = 0; // serial for currently-previewed photo (not yet committed)
+        let serialCommitted = false; // true once downloaded
+        let currentGPS = { lat: null, lng: null, accuracy: null, address: 'Detecting address...' };
+        let watchId = null;
+
+        // iOS detection
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
         // ============================================================
-        // Helper: Format date/time in 12hr format with seconds
+        // Serial helpers
+        // ============================================================
+        function getNextSerialNumber() {
+            return photoCount + 1;
+        }
+
+        function updateSerialDisplay() {
+            serialDisplay.textContent = `${CONFIG.countPrefix}${getNextSerialNumber()}`;
+        }
+
+        function commitSerial() {
+            if (serialCommitted) return;
+            photoCount++;
+            localStorage.setItem(CONFIG.lsSerialKey, String(photoCount));
+            serialCommitted = true;
+            updateSerialDisplay();
+        }
+
+        // ============================================================
+        // Format date/time in 12hr format with seconds
         // ============================================================
         function formatDateTime12hr(now) {
             const d = now || new Date();
             const pad = (n) => String(n).padStart(2, '0');
-
             const day = pad(d.getDate());
             const month = pad(d.getMonth() + 1);
             const year = d.getFullYear();
-
             let hours = d.getHours();
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12 || 12;
-
             const minutes = pad(d.getMinutes());
             const seconds = pad(d.getSeconds());
-
             return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+        }
+
+        // Get short timezone name (e.g. IST, EST, PST)
+        function getTimezoneAbbr() {
+            try {
+                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                const parts = new Intl.DateTimeFormat('en-US', {
+                    timeZoneName: 'short',
+                    timeZone: tz
+                }).formatToParts(new Date());
+                const tzPart = parts.find(p => p.type === 'timeZoneName');
+                return tzPart ? tzPart.value : tz;
+            } catch {
+                return '';
+            }
         }
 
         // ============================================================
@@ -392,53 +364,82 @@
                 const lngStr = currentGPS.lng.toFixed(6);
                 gpsCoords.textContent = `Lat ${latStr}° Long ${lngStr}°`;
                 mapLink.href = `https://www.google.com/maps?q=${currentGPS.lat},${currentGPS.lng}`;
-                gpsLocation.textContent = currentGPS.address || 'Detecting location...';
+                fullAddress.textContent = currentGPS.address || 'Detecting address...';
             } else {
                 gpsCoords.textContent = 'Waiting for GPS...';
-                gpsLocation.textContent = 'Detecting location...';
+                fullAddress.textContent = 'Detecting address...';
                 mapLink.href = '#';
             }
         }
 
         setInterval(updateInfoDiv, 1000);
         updateInfoDiv();
+        updateSerialDisplay();
 
         // ============================================================
-        // Reverse Geocoding
+        // Reverse Geocoding — FULL ADDRESS, FORCED ENGLISH
         // ============================================================
+        function isEnglishText(str) {
+            if (!str) return false;
+            // Allow Latin letters, digits, common punctuation & spaces
+            return /^[\x00-\x7F\s,.\-#/()&'":;°]+$/.test(str);
+        }
+
+        function buildFullAddress(addr, displayName) {
+            // Build a detailed address: H.No/Building, Road, Area, Suburb, City, State, Postcode, Country
+            const parts = [];
+            const push = (v) => {
+                if (v && typeof v === 'string' && v.trim() && isEnglishText(v)) {
+                    parts.push(v.trim());
+                }
+            };
+
+            push(addr.house_number);
+            push(addr.building);
+            push(addr.amenity);
+            push(addr.road || addr.street || addr.pedestrian || addr.footway);
+            push(addr.neighbourhood || addr.suburb);
+            push(addr.city_district || addr.district);
+            push(addr.city || addr.town || addr.village || addr.hamlet);
+            push(addr.county);
+            push(addr.state_district);
+            push(addr.state);
+            push(addr.postcode);
+            push(addr.country);
+
+            let result = parts.filter(Boolean).join(', ');
+
+            // If we didn't get enough detail, fall back to display_name (English only)
+            if (result.length < 25 && displayName && isEnglishText(displayName)) {
+                result = displayName;
+            }
+            return result || 'Location not found';
+        }
+
         async function getLocationName(lat, lng) {
             try {
-                const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-                const response = await fetch(url);
+                // Force English: accept-language=en and &accept-language=en
+                const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=en`;
+                const response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Accept-Language': 'en'
+                    }
+                });
                 const data = await response.json();
 
-                if (data && data.display_name) {
-                    const addr = data.address;
-                    let parts = [];
-
-                    if (addr.road || addr.street) parts.push(addr.road || addr.street);
-                    if (addr.suburb || addr.neighbourhood) parts.push(addr.suburb || addr.neighbourhood);
-                    if (addr.city || addr.town || addr.village) parts.push(addr.city || addr.town || addr.village);
-                    if (addr.state) parts.push(addr.state);
-                    if (addr.country) parts.push(addr.country);
-
-                    // Build address like: "City, State, Country"
-                    let shortAddress = parts.join(', ');
-
-                    // If too short, use display_name
-                    if (shortAddress.length < 15) {
-                        shortAddress = data.display_name;
-                    }
-
-                    currentGPS.address = shortAddress;
+                if (data && data.address) {
+                    currentGPS.address = buildFullAddress(data.address, data.display_name);
+                } else if (data && data.display_name && isEnglishText(data.display_name)) {
+                    currentGPS.address = data.display_name;
                 } else {
-                    currentGPS.address = 'Location not found';
+                    currentGPS.address = 'Address unavailable in English';
                 }
             } catch (err) {
                 console.warn('Reverse geocoding error:', err);
-                currentGPS.address = 'Location unavailable';
+                currentGPS.address = 'Address lookup failed';
             }
-            gpsLocation.textContent = currentGPS.address;
+            fullAddress.textContent = currentGPS.address;
             return currentGPS.address;
         }
 
@@ -448,7 +449,7 @@
         function startGeolocation() {
             if (!navigator.geolocation) {
                 gpsCoords.textContent = '❌ GPS not available';
-                gpsLocation.textContent = 'GPS not supported';
+                fullAddress.textContent = 'GPS not supported';
                 return;
             }
 
@@ -457,58 +458,54 @@
                     currentGPS.lat = pos.coords.latitude;
                     currentGPS.lng = pos.coords.longitude;
                     currentGPS.accuracy = pos.coords.accuracy;
-
-                    const latStr = currentGPS.lat.toFixed(6);
-                    const lngStr = currentGPS.lng.toFixed(6);
-                    gpsCoords.textContent = `Lat ${latStr}° Long ${lngStr}°`;
-                    mapLink.href = `https://www.google.com/maps?q=${currentGPS.lat},${currentGPS.lng}`;
-
+                    updateInfoDiv();
                     await getLocationName(currentGPS.lat, currentGPS.lng);
                     updateInfoDiv();
                 },
                 (err) => {
                     gpsCoords.textContent = `❌ GPS error`;
-                    gpsLocation.textContent = 'Location unavailable';
-                }, {
-                    enableHighAccuracy: true,
-                    timeout: 15000,
-                    maximumAge: 5000,
-                }
+                    fullAddress.textContent = 'Location unavailable';
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
             );
 
-            navigator.geolocation.watchPosition(
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+            watchId = navigator.geolocation.watchPosition(
                 async (pos) => {
-                    const moved = currentGPS.lat !== null &&
-                        Math.abs(pos.coords.latitude - currentGPS.lat) > 0.0001 ||
-                        Math.abs(pos.coords.longitude - currentGPS.lng) > 0.0001;
+                    // FIXED operator precedence bug
+                    const moved = currentGPS.lat !== null && (
+                        Math.abs(pos.coords.latitude - currentGPS.lat) > 0.0003 ||
+                        Math.abs(pos.coords.longitude - currentGPS.lng) > 0.0003
+                    );
 
                     currentGPS.lat = pos.coords.latitude;
                     currentGPS.lng = pos.coords.longitude;
                     currentGPS.accuracy = pos.coords.accuracy;
-
-                    const latStr = currentGPS.lat.toFixed(6);
-                    const lngStr = currentGPS.lng.toFixed(6);
-                    gpsCoords.textContent = `Lat ${latStr}° Long ${lngStr}°`;
-                    mapLink.href = `https://www.google.com/maps?q=${currentGPS.lat},${currentGPS.lng}`;
+                    updateInfoDiv();
 
                     if (moved) {
                         await getLocationName(currentGPS.lat, currentGPS.lng);
+                        updateInfoDiv();
                     }
-                    updateInfoDiv();
                 },
-                (err) => {},
+                () => {},
                 { enableHighAccuracy: true, maximumAge: 10000 }
             );
         }
 
         // ============================================================
-        // Camera setup
+        // Camera setup — set proper aspect ratio
         // ============================================================
+        function setVideoAspect(vw, vh) {
+            if (!vw || !vh) return;
+            const ratio = vw / vh;
+            videoWrapper.style.aspectRatio = `${vw} / ${vh}`;
+            console.log(`📐 Video aspect ratio set to ${ratio.toFixed(3)} (${vw}x${vh})`);
+        }
+
         async function startCamera(faceMode) {
             try {
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
+                if (stream) stream.getTracks().forEach(t => t.stop());
 
                 const constraints = {
                     video: {
@@ -523,6 +520,15 @@
                 video.srcObject = stream;
                 await video.play();
 
+                // Sync wrapper aspect ratio to camera's natural ratio
+                const sync = () => {
+                    if (video.videoWidth && video.videoHeight) {
+                        setVideoAspect(video.videoWidth, video.videoHeight);
+                    }
+                };
+                if (video.readyState >= 1) sync();
+                video.onloadedmetadata = sync;
+
                 statusMsg.innerHTML = `<span class="ready">✅ Camera ready (${faceMode === 'environment' ? 'Rear' : 'Front'})</span>`;
                 return true;
             } catch (err) {
@@ -533,117 +539,164 @@
         }
 
         // ============================================================
-        // Capture photo - EXACTLY like the reference image
+        // Canvas text wrapping helper
+        // ============================================================
+        function wrapText(ctx, text, maxWidth) {
+            const words = text.split(' ');
+            const lines = [];
+            let line = '';
+            for (const word of words) {
+                const test = line ? line + ' ' + word : word;
+                if (ctx.measureText(test).width > maxWidth && line) {
+                    lines.push(line);
+                    line = word;
+                } else {
+                    line = test;
+                }
+            }
+            if (line) lines.push(line);
+            return lines;
+        }
+
+        // ============================================================
+        // Capture photo — proper aspect ratio, full English address
         // ============================================================
         function capturePhoto() {
-            if (!stream) {
-                alert('Camera not ready. Please wait.');
-                return;
-            }
+            if (!stream) { alert('Camera not ready.'); return; }
 
-            // Flash effect
             flash.classList.add('active');
             setTimeout(() => flash.classList.remove('active'), 150);
 
-            // Increment count
-            photoCount++;
-            const countLabel = `${CONFIG.countPrefix}${photoCount}`;
+            // Serial number for THIS photo (not yet committed)
+            currentPhotoSerial = getNextSerialNumber();
+            serialCommitted = false;
+            const countLabel = `${CONFIG.countPrefix}${currentPhotoSerial}`;
 
-            // Get current data
             const now = new Date();
             const timestamp = formatDateTime12hr(now);
+            const tzAbbr = getTimezoneAbbr();
             const lat = currentGPS.lat;
             const lng = currentGPS.lng;
-            const address = currentGPS.address || 'Location unknown';
-
+            const address = currentGPS.address || 'Address unavailable';
             const latStr = lat !== null ? `${lat.toFixed(6)}°` : '--.------°';
             const lngStr = lng !== null ? `${lng.toFixed(6)}°` : '--.------°';
 
-            // --- Draw the stamped image ---
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
+            // ---- 1. Use camera's NATURAL dimensions (proper ratio) ----
             const vw = video.videoWidth || 1280;
             const vh = video.videoHeight || 720;
-            canvas.width = vw;
-            canvas.height = vh + 140; // Extra space at bottom for stamp
 
-            // 1) Draw the video frame
+            // Base font sizes proportional to width (so it scales on high-res)
+            const base = Math.max(vw / 1000, 0.6);
+            const fsCompany = Math.round(20 * base);
+            const fsAddress = Math.round(15 * base);
+            const fsGPS     = Math.round(14 * base);
+            const fsTime    = Math.round(15 * base);
+            const fsCount   = Math.round(CONFIG.countFontSize * base);
+            const fsWater   = Math.round(13 * base);
+
+            // ---- 2. Calculate stamp area height based on wrapped address ----
+            const padX = Math.round(22 * base);
+            const padTop = Math.round(14 * base);
+            const lineGap = Math.round(6 * base);
+
+            ctx.font = `${fsAddress}px 'Arial', 'Helvetica', sans-serif`;
+            const maxAddressWidth = vw - padX * 2 - Math.round(120 * base); // leave room for serial on right
+            const addressLines = wrapText(ctx, `📍 ${address}`, maxAddressWidth);
+            const maxAddrLines = 3; // cap to keep stamp tidy
+            const addressLinesUsed = addressLines.slice(0, maxAddrLines);
+            if (addressLines.length > maxAddrLines) {
+                const last = addressLinesUsed[maxAddrLines - 1];
+                addressLinesUsed[maxAddrLines - 1] = last.slice(0, Math.max(0, last.length - 1)) + '…';
+            }
+
+            const stampHeight = padTop
+                + fsCompany + lineGap
+                + (addressLinesUsed.length * (fsAddress + lineGap))
+                + fsGPS + lineGap
+                + fsTime + lineGap
+                + Math.round(10 * base);
+
+            canvas.width = vw;
+            canvas.height = vh + stampHeight;
+
+            // ---- 3. Draw video frame ----
             ctx.drawImage(video, 0, 0, vw, vh);
 
-            // 2) Dark background for stamp area (like the reference)
+            // ---- 4. Stamp background ----
             const stampY = vh;
-            const stampHeight = 140;
             const gradient = ctx.createLinearGradient(0, stampY, 0, stampY + stampHeight);
             gradient.addColorStop(0, 'rgba(0,0,0,0.92)');
             gradient.addColorStop(1, 'rgba(10,10,30,0.98)');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, stampY, vw, stampHeight);
 
-            // 3) Border line separating photo and stamp
             ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = Math.max(1, 2 * base);
             ctx.beginPath();
-            ctx.moveTo(20, stampY);
-            ctx.lineTo(vw - 20, stampY);
+            ctx.moveTo(padX, stampY);
+            ctx.lineTo(vw - padX, stampY);
             ctx.stroke();
 
-            // 4) Company Name (top of stamp area, left aligned) - RED like reference
+            let y = stampY + padTop;
+
+            // ---- 5. Company name ----
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
-            ctx.font = `bold 18px 'Arial', 'Helvetica', sans-serif`;
+            ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
             ctx.fillStyle = '#e94560';
             ctx.shadowColor = 'rgba(0,0,0,0.5)';
-            ctx.shadowBlur = 4;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 1;
-            ctx.fillText(`🏢 ${CONFIG.companyName}`, 20, stampY + 14);
+            ctx.shadowBlur = 4 * base;
+            ctx.shadowOffsetY = 1 * base;
+            ctx.fillText(`🏢 ${CONFIG.companyName}`, padX, y);
+            y += fsCompany + lineGap;
 
-            // 5) Address (below company name)
-            ctx.font = `15px 'Arial', 'Helvetica', sans-serif`;
+            // ---- 6. Full address (wrapped, multi-line) ----
+            ctx.font = `${fsAddress}px 'Arial', 'Helvetica', sans-serif`;
             ctx.fillStyle = '#aac8ff';
-            ctx.shadowBlur = 3;
-            ctx.fillText(`📍 ${address}`, 20, stampY + 42);
+            ctx.shadowBlur = 3 * base;
+            for (const line of addressLinesUsed) {
+                ctx.fillText(line, padX, y);
+                y += fsAddress + lineGap;
+            }
 
-            // 6) GPS Coordinates (below address)
-            ctx.font = `14px 'Courier New', monospace`;
+            // ---- 7. GPS coords ----
+            ctx.font = `${fsGPS}px 'Courier New', monospace`;
             ctx.fillStyle = '#8bc34a';
-            ctx.shadowBlur = 3;
-            ctx.fillText(`Lat ${latStr}  Long ${lngStr}`, 20, stampY + 68);
+            ctx.shadowBlur = 3 * base;
+            ctx.fillText(`Lat ${latStr}   Long ${lngStr}`, padX, y);
+            y += fsGPS + lineGap;
 
-            // 7) Date & Time (bottom of stamp, left aligned)
-            ctx.font = `15px 'Courier New', monospace`;
+            // ---- 8. Date & time with real timezone ----
+            ctx.font = `${fsTime}px 'Courier New', monospace`;
             ctx.fillStyle = '#ffd54f';
-            ctx.shadowBlur = 3;
-            ctx.fillText(`🕐 ${timestamp}  GMT +05:30`, 20, stampY + 96);
+            ctx.shadowBlur = 3 * base;
+            ctx.fillText(`🕐 ${timestamp}  ${tzAbbr}`, padX, y);
 
-            // 8) Count label (top-right corner of stamp area)
+            // ---- 9. Serial number (top-right of stamp) ----
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
-            ctx.font = `bold ${CONFIG.countFontSize}px 'Arial Black', sans-serif`;
-            ctx.fillStyle = 'rgba(255,215,0,0.25)';
+            ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
+            ctx.fillStyle = 'rgba(255,215,0,0.32)';
             ctx.shadowBlur = 0;
-            ctx.fillText(countLabel, vw - 20, stampY + 10);
+            ctx.fillText(countLabel, vw - padX, stampY + padTop);
 
-            // 9) "NSPIRA" watermark at bottom-right (like "GPS Map Camera" in reference)
-            ctx.textAlign = 'right';
+            // ---- 10. NSPIRA watermark bottom-right ----
             ctx.textBaseline = 'bottom';
-            ctx.font = `13px 'Courier New', monospace`;
-            ctx.fillStyle = 'rgba(255,255,255,0.2)';
-            ctx.shadowBlur = 0;
-            ctx.fillText('NSPIRA', vw - 20, stampY + stampHeight - 10);
+            ctx.font = `${fsWater}px 'Courier New', monospace`;
+            ctx.fillStyle = 'rgba(255,255,255,0.22)';
+            ctx.fillText('NSPIRA', vw - padX, stampY + stampHeight - Math.round(8 * base));
 
             // Reset shadow
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
 
-            // 10) Export
+            // ---- 11. Export ----
             canvas.toBlob((blob) => {
-                if (!blob) {
-                    alert('Failed to capture image.');
-                    return;
-                }
+                if (!blob) { alert('Failed to capture image.'); return; }
                 currentPhotoBlob = blob;
 
                 const url = URL.createObjectURL(blob);
@@ -651,14 +704,54 @@
                 previewWrapper.style.display = 'block';
 
                 downloadBtn.disabled = false;
-                statusMsg.innerHTML = `<span class="ready">✅ Photo #${photoCount} captured! Press Download to save.</span>`;
+                statusMsg.innerHTML = `<span class="ready">✅ Captured (preview ${countLabel}). Press Download to save &amp; advance serial.</span>`;
             }, 'image/jpeg', 0.92);
         }
 
         // ============================================================
-        // Download
+        // Database upload — PROVISION (stub)
         // ============================================================
-        function downloadPhoto() {
+        async function uploadToDatabase(blob, meta) {
+            // If DB endpoint not configured, skip silently
+            if (!CONFIG.dbUploadUrl) {
+                console.log('ℹ️ DB upload skipped (no endpoint configured). Payload ready:', meta);
+                return { success: false, reason: 'no-endpoint' };
+            }
+
+            try {
+                const form = new FormData();
+                form.append('photo', blob, meta.filename);
+                form.append('serial', String(meta.serial));
+                form.append('company', CONFIG.companyName);
+                form.append('timestamp', meta.timestamp);
+                form.append('latitude', meta.lat !== null ? String(meta.lat) : '');
+                form.append('longitude', meta.lng !== null ? String(meta.lng) : '');
+                form.append('address', meta.address);
+                form.append('device', navigator.userAgent);
+
+                const headers = {};
+                if (CONFIG.dbApiKey) headers['Authorization'] = `Bearer ${CONFIG.dbApiKey}`;
+
+                const res = await fetch(CONFIG.dbUploadUrl, {
+                    method: 'POST',
+                    headers,
+                    body: form,
+                });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const json = await res.json().catch(() => ({}));
+                console.log('✅ DB upload success:', json);
+                return { success: true, response: json };
+            } catch (err) {
+                console.error('❌ DB upload failed:', err);
+                return { success: false, reason: err.message };
+            }
+        }
+
+        // ============================================================
+        // Download — commit serial, upload to DB
+        // ============================================================
+        async function downloadPhoto() {
             if (!currentPhotoBlob) return;
 
             const now = new Date();
@@ -668,25 +761,130 @@
                 String(now.getHours()).padStart(2, '0') +
                 String(now.getMinutes()).padStart(2, '0') +
                 String(now.getSeconds()).padStart(2, '0');
-            const filename = `Nspira_${photoCount}_${ts}.jpg`;
+            const filename = `Nspira_${currentPhotoSerial}_${ts}.jpg`;
 
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(currentPhotoBlob);
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // ---- 1. Commit the serial NOW (before saving) ----
+            commitSerial();
 
-            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-            statusMsg.innerHTML = `<span class="ready">✅ Downloaded: ${filename}</span>`;
+            // ---- 2. Save on device ----
+            if (isIOS || (isSafari && !window.MSStream)) {
+                // iOS/Safari: open overlay with long-press save + Share API
+                showIOSOverlay(filename);
+            } else {
+                // Android/Desktop: standard anchor download
+                try {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(currentPhotoBlob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    setTimeout(() => URL.revokeObjectURL(link.href), 1500);
+                    statusMsg.innerHTML = `<span class="ready">✅ Downloaded: ${filename}</span>`;
+                } catch (e) {
+                    statusMsg.innerHTML = `<span class="warn">⚠️ Download issue — using share fallback.</span>`;
+                    showIOSOverlay(filename);
+                }
+            }
+
+            // ---- 3. Upload to DB (fire & forget) ----
+            const meta = {
+                filename,
+                serial: currentPhotoSerial,
+                timestamp: formatDateTime12hr(now),
+                lat: currentGPS.lat,
+                lng: currentGPS.lng,
+                address: currentGPS.address,
+            };
+            uploadToDatabase(currentPhotoBlob, meta).then((result) => {
+                if (result.success) {
+                    statusMsg.innerHTML += `<br /><span class="ready">☁️ Uploaded to database.</span>`;
+                } else if (result.reason === 'no-endpoint') {
+                    // silent
+                } else {
+                    statusMsg.innerHTML += `<br /><span class="warn">⚠️ DB upload failed: ${result.reason}</span>`;
+                }
+            });
+
+            // ---- 4. Reset preview state so next capture uses new serial ----
+            setTimeout(() => {
+                downloadBtn.disabled = true;
+                previewWrapper.style.display = 'none';
+                previewImage.src = '';
+                currentPhotoBlob = null;
+                serialCommitted = false;
+                updateSerialDisplay();
+            }, 1500);
+        }
+
+        // ============================================================
+        // iOS overlay (long-press to save + Web Share API)
+        // ============================================================
+        function showIOSOverlay(filename) {
+            const url = URL.createObjectURL(currentPhotoBlob);
+            iosOverlayImg.src = url;
+            iosOverlay.dataset.filename = filename;
+            iosOverlay.classList.add('active');
+        }
+
+        iosCloseBtn.addEventListener('click', () => {
+            iosOverlay.classList.remove('active');
+            if (iosOverlayImg.src) URL.revokeObjectURL(iosOverlayImg.src);
+        });
+
+        iosSaveBtn.addEventListener('click', async () => {
+            if (!currentPhotoBlob) return;
+            const filename = iosOverlay.dataset.filename || 'Nspira.jpg';
+            const file = new File([currentPhotoBlob], filename, { type: 'image/jpeg' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Nspira Photo',
+                        text: 'Nspira stamped photo',
+                    });
+                    statusMsg.innerHTML = `<span class="ready">✅ Shared/saved.</span>`;
+                } catch (e) {
+                    console.warn('Share cancelled:', e);
+                }
+            } else {
+                alert('Long-press the image, then choose "Save to Photos".');
+            }
+        });
+
+        // ============================================================
+        // Reset button — reset serial to 1
+        // ============================================================
+        async function resetSerial() {
+            const ok = confirm('Reset serial number to NSP-1?\nThis will not delete already-downloaded photos.');
+            if (!ok) return;
+
+            photoCount = 0;
+            serialCommitted = false;
+            localStorage.setItem(CONFIG.lsSerialKey, '0');
+            updateSerialDisplay();
+
+            // Optional DB reset hook
+            if (CONFIG.dbUploadUrl) {
+                try {
+                    await fetch(CONFIG.dbUploadUrl.replace(/\/photos\/?$/, '/reset'), {
+                        method: 'POST',
+                        headers: CONFIG.dbApiKey ? { Authorization: `Bearer ${CONFIG.dbApiKey}` } : {},
+                    });
+                } catch (e) {
+                    console.warn('DB reset failed:', e);
+                }
+            }
+
+            statusMsg.innerHTML = `<span class="ready">✅ Serial reset. Next: NSP-1</span>`;
         }
 
         // ============================================================
         // Switch camera
         // ============================================================
         async function switchCamera() {
-            const newMode = (facingMode === 'environment') ? 'user' : 'environment';
-            facingMode = newMode;
+            facingMode = (facingMode === 'environment') ? 'user' : 'environment';
             await startCamera(facingMode);
         }
 
@@ -696,24 +894,23 @@
         captureBtn.addEventListener('click', capturePhoto);
         downloadBtn.addEventListener('click', downloadPhoto);
         switchBtn.addEventListener('click', switchCamera);
+        resetBtn.addEventListener('click', resetSerial);
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === ' ' || e.key === 'Enter') {
-                e.preventDefault();
-                captureBtn.click();
-            }
-            if (e.key === 'd' || e.key === 'D') {
-                downloadBtn.click();
-            }
-            if (e.key === 's' || e.key === 'S') {
-                switchBtn.click();
-            }
+            if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); captureBtn.click(); }
+            if (e.key === 'd' || e.key === 'D') downloadBtn.click();
+            if (e.key === 's' || e.key === 'S') switchBtn.click();
         });
 
         // ============================================================
         // Initialize
         // ============================================================
         async function init() {
+            // HTTPS check (getUserMedia requires secure context)
+            if (!window.isSecureContext) {
+                statusMsg.innerHTML = `<span class="error">❌ Camera requires HTTPS. Please open via https://</span>`;
+                return;
+            }
             startGeolocation();
             await startCamera('environment');
         }
@@ -721,13 +918,7 @@
         init();
 
         console.log('📸 Nspira Camera App loaded!');
-        console.log('🏢 Stamped image style matches reference:');
-        console.log('   - Company name (red)');
-        console.log('   - Address (light blue)');
-        console.log('   - GPS coordinates (green)');
-        console.log('   - Date/Time with seconds (yellow)');
-        console.log('   - Count label (NSP-1, NSP-2...)');
-        console.log('   - "NSPIRA" watermark at bottom-right');
+        console.log('ℹ️ iOS detected:', isIOS, '| Safari:', isSafari);
     </script>
 </body>
 </html>
