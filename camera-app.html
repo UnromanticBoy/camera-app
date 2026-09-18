@@ -185,8 +185,9 @@
 
         <div class="info-div" id="infoDiv">
             <div class="company-name">
-                <span class="icon"> <src=https://mynspira.in/assets/images/logo-light.png</span>Nspira Camera
-            </div>
+    <span class="icon"> <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo">
+             </span>Nspira Camera
+         </div>
             <div class="gps-line" id="gpsLine">
                 <span class="icon">📍</span> GPS: <span id="gpsCoords">Waiting for GPS...</span>
                 <span class="divider">|</span>
@@ -610,7 +611,7 @@
             ctx.shadowColor = 'rgba(0,0,0,0.5)';
             ctx.shadowBlur = 4 * base;
             ctx.shadowOffsetY = 1 * base;
-            ctx.fillText(`🏢 ${CONFIG.companyName}`, padX, y);
+            ctx.fillText(`${CONFIG.companyName}`, padX, y);
             y += fsCompany + lineGap;
 
             // Address (multi-line, word-safe)
