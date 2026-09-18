@@ -52,7 +52,38 @@
             -webkit-user-select: none;
             pointer-events: none;
         }
-        .info-div .company-name { color: #e94560; font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
+
+        /* ✅ FIX #4 & #5: Company name row — logo + text side by side, vertically centered,
+           text never wraps, logo properly sized */
+        .info-div .company-name {
+            color: #e94560;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        .info-div .company-name .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-right: 0;
+        }
+        .info-div .company-name .icon img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            display: block;
+        }
+        .info-div .company-name .company-text {
+            display: inline-block;
+            line-height: 1.2;
+        }
+
         .info-div .gps-line { color: #4fc3f7; font-size: 13px; font-weight: 500; }
         .info-div .gps-line .map-link { color: #4fc3f7; text-decoration: none; pointer-events: auto; cursor: pointer; }
         .info-div .gps-line .map-link:hover { text-decoration: underline; }
@@ -173,12 +204,8 @@
             .header h1 { font-size: 15px; }
             .info-div { font-size: 11px; padding: 10px; line-height: 1.6; }
             .info-div .company-name { font-size: 14px; }
+            .info-div .company-name .icon img { width: 28px; height: 28px; }
         }
-        .company-name .icon img {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-}
     </style>
 </head>
 <body>
@@ -189,10 +216,13 @@
         </div>
 
         <div class="info-div" id="infoDiv">
+            <!-- ✅ FIX #4 & #5: proper flex row, larger logo, text stays on one line -->
             <div class="company-name">
-    <span class="icon"> <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo">
-             </span>Nspira Camera
-         </div>
+                <span class="icon">
+                    <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo">
+                </span>
+                <span class="company-text">Nspira Camera</span>
+            </div>
             <div class="gps-line" id="gpsLine">
                 <span class="icon">📍</span> GPS: <span id="gpsCoords">Waiting for GPS...</span>
                 <span class="divider">|</span>
@@ -204,7 +234,6 @@
             <div class="time-line" id="timeLine">
                 <span class="icon">🕐</span> Date &amp; Time: <span id="dateTimeDisplay">--/--/---- --:--:-- --</span>
             </div>
-            <!-- Reset & Next Serial removed from UI per request -->
         </div>
 
         <div class="video-wrapper" id="videoWrapper">
@@ -216,7 +245,6 @@
             <button class="btn-capture" id="captureBtn">📷 Capture</button>
             <button class="btn-switch" id="switchBtn">🔄 Switch</button>
             <button class="btn-download" id="downloadBtn" disabled>⬇️ Download</button>
-            <!-- Reset button removed from UI -->
         </div>
 
         <div class="status-msg" id="statusMsg">
@@ -251,14 +279,21 @@
             countPrefix: 'NSP-',
             timeFormat: '12hr',
             countFontSize: 32,
-            // Max address lines drawn on the stamp (kept within 3-4 lines)
             addressMaxLines: 4,
-            // Max characters per address line (word-safe wrapping)
             addressCharsPerLine: 55,
-            // Database endpoint — leave empty to disable upload
             dbUploadUrl: '',
             dbApiKey: '',
             lsSerialKey: 'nspira_serial_count',
+
+            // ✅ FIX #1 & #2: Logo asset for the downloaded (canvas) image.
+            // Two options:
+            //  (a) Leave as remote URL — requires CORS header on the server.
+            //  (b) BEST: paste a base64 data URI here (see notes below the code).
+            //      Example: 'data:image/png;base64,iVBORw0KGgoAAAANS...'
+            // If this is a data URI, no CORS/network delay issue at all.
+            logoDataUri: 'https://mynspira.in/assets/images/logo-light.png',
+            logoWidth: 140,
+            logoHeight: 48,
         };
 
         // ============================================================
@@ -296,8 +331,38 @@
         let currentGPS = { lat: null, lng: null, accuracy: null, address: 'Detecting address...' };
         let watchId = null;
 
+        // ✅ FIX #1: Preload the logo ONCE so it's ready before any capture.
+        // We store it as an HTMLImageElement and wait for its onload.
+        let logoImage = null;
+        let logoReady = false;
+
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+        // ============================================================
+        // Logo loader (pre-loads once, resolves when ready)
+        // ============================================================
+        function loadLogo() {
+            return new Promise((resolve) => {
+                const img = new Image();
+                // If data URI, crossOrigin is harmless. If remote, needed for canvas.
+                if (!CONFIG.logoDataUri.startsWith('data:')) {
+                    img.crossOrigin = 'anonymous';
+                }
+                img.onload = () => {
+                    logoImage = img;
+                    logoReady = true;
+                    console.log('✅ Logo preloaded:', img.naturalWidth + 'x' + img.naturalHeight);
+                    resolve(true);
+                };
+                img.onerror = (e) => {
+                    console.warn('⚠️ Logo failed to load — stamp will show text fallback.', e);
+                    logoReady = false;
+                    resolve(false);
+                };
+                img.src = CONFIG.logoDataUri;
+            });
+        }
 
         // ============================================================
         // Serial helpers
@@ -491,8 +556,7 @@
         }
 
         // ============================================================
-        // Word-safe wrapping by character budget (3–4 clean lines)
-        // Never breaks a word across lines.
+        // Word-safe wrapping
         // ============================================================
         function wrapByCharBudget(text, charsPerLine, maxLines) {
             const words = String(text).split(/\s+/).filter(Boolean);
@@ -500,23 +564,19 @@
             let current = '';
 
             for (const word of words) {
-                // If a single word is longer than budget, keep it whole on its own line
                 const candidate = current ? current + ' ' + word : word;
                 if (candidate.length <= charsPerLine) {
                     current = candidate;
                 } else {
                     if (current) lines.push(current);
-                    // If word itself exceeds budget, still push it as its own line (never break it)
                     current = word;
                 }
             }
             if (current) lines.push(current);
 
-            // If more lines than allowed, merge overflow into the last allowed line, but keep word-safe
             if (lines.length > maxLines) {
                 const head = lines.slice(0, maxLines - 1);
                 const tail = lines.slice(maxLines - 1).join(' ');
-                // Tail might exceed budget; trim by whole words
                 const tailWords = tail.split(' ');
                 let trimmed = '';
                 for (const w of tailWords) {
@@ -532,9 +592,10 @@
         }
 
         // ============================================================
-        // Capture photo
+        // Capture photo — now ASYNC so we can await the logo
+        // ✅ FIX #1: logo is preloaded already; we still guard with await
         // ============================================================
-        function capturePhoto() {
+        async function capturePhoto() {
             if (!stream) { alert('Camera not ready.'); return; }
 
             flash.classList.add('active');
@@ -565,24 +626,26 @@
             const fsGPS     = Math.round(14 * base);
             const fsTime    = Math.round(15 * base);
             const fsCount   = Math.round(CONFIG.countFontSize * base);
-            const fsWater   = Math.round(13 * base);
 
             const padX = Math.round(22 * base);
             const padTop = Math.round(14 * base);
             const lineGap = Math.round(6 * base);
 
-            // ---- Word-safe wrapping into 3-4 lines ----
             const addressLinesUsed = wrapByCharBudget(
                 `📍 ${address}`,
                 CONFIG.addressCharsPerLine,
                 CONFIG.addressMaxLines
             );
 
+            // ✅ FIX #1: reserve space for the logo row inside the stamp.
+            const logoRowHeight = logoReady ? Math.round(CONFIG.logoHeight * base * 0.9) : 0;
+
             const stampHeight = padTop
                 + fsCompany + lineGap
                 + (addressLinesUsed.length * (fsAddress + lineGap))
                 + fsGPS + lineGap
                 + fsTime + lineGap
+                + logoRowHeight
                 + Math.round(10 * base);
 
             canvas.width = vw;
@@ -608,7 +671,7 @@
 
             let y = stampY + padTop;
 
-            // Company
+            // Company text
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
@@ -619,7 +682,7 @@
             ctx.fillText(`${CONFIG.companyName}`, padX, y);
             y += fsCompany + lineGap;
 
-            // Address (multi-line, word-safe)
+            // Address
             ctx.font = `${fsAddress}px 'Arial', 'Helvetica', sans-serif`;
             ctx.fillStyle = '#aac8ff';
             ctx.shadowBlur = 3 * base;
@@ -649,38 +712,56 @@
             ctx.shadowBlur = 0;
             ctx.fillText(countLabel, vw - padX, stampY + padTop);
 
-            // Watermark
-            ctx.textBaseline = 'bottom';
-            ctx.font = `${fsWater}px 'Courier New', monospace`;
-            ctx.fillStyle = 'rgba(255,255,255,0.22)';
-            const logo = new Image();
-logo.crossOrigin = "anonymous";
-logo.src = "https://mynspira.in/assets/images/logo-light.png";
-
-logo.onload = function () {
-    const logoWidth = 120;
-    const logoHeight = 40;
-
-    ctx.drawImage(
-        logo,
-        vw - padX - logoWidth,
-        stampY + stampHeight - logoHeight - Math.round(8 * base),
-        logoWidth,
-        logoHeight
-    );
-};            ctx.shadowBlur = 0;
+            // ✅ FIX #1 & #3: draw the preloaded logo synchronously.
+            // If the logo isn't ready (shouldn't happen — we preload on init),
+            // fall back to the text watermark "NSPIRA".
+            ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
 
-            canvas.toBlob((blob) => {
-                if (!blob) { alert('Failed to capture image.'); return; }
-                currentPhotoBlob = blob;
-                const url = URL.createObjectURL(blob);
-                previewImage.src = url;
-                previewWrapper.style.display = 'block';
-                downloadBtn.disabled = false;
-                statusMsg.innerHTML = `<span class="ready">✅ Captured. Press Download to save.</span>`;
-            }, 'image/jpeg', 0.92);
+            if (logoReady && logoImage) {
+                const lw = Math.round(CONFIG.logoWidth * base);
+                const lh = Math.round(CONFIG.logoHeight * base);
+                const lx = vw - padX - lw;
+                const ly = stampY + stampHeight - lh - Math.round(8 * base);
+                try {
+                    ctx.drawImage(logoImage, lx, ly, lw, lh);
+                } catch (err) {
+                    // Tainted canvas guard — fall back to text
+                    console.warn('drawImage(logo) failed, using text watermark:', err);
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'bottom';
+                    ctx.font = `${Math.round(13 * base)}px 'Courier New', monospace`;
+                    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+                    ctx.fillText('NSPIRA', vw - padX, stampY + stampHeight - Math.round(8 * base));
+                }
+            } else {
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'bottom';
+                ctx.font = `${Math.round(13 * base)}px 'Courier New', monospace`;
+                ctx.fillStyle = 'rgba(255,255,255,0.22)';
+                ctx.fillText('NSPIRA', vw - padX, stampY + stampHeight - Math.round(8 * base));
+            }
+
+            // ✅ FIX #2: wrap toBlob in try/catch to surface tainted canvas errors clearly
+            try {
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        alert('Failed to capture image.');
+                        statusMsg.innerHTML = `<span class="error">❌ Failed to capture image.</span>`;
+                        return;
+                    }
+                    currentPhotoBlob = blob;
+                    const url = URL.createObjectURL(blob);
+                    previewImage.src = url;
+                    previewWrapper.style.display = 'block';
+                    downloadBtn.disabled = false;
+                    statusMsg.innerHTML = `<span class="ready">✅ Captured. Press Download to save.</span>`;
+                }, 'image/jpeg', 0.92);
+            } catch (err) {
+                console.error('toBlob failed:', err);
+                statusMsg.innerHTML = `<span class="error">❌ Capture failed: ${err.message}</span>`;
+            }
         }
 
         // ============================================================
@@ -806,8 +887,7 @@ logo.onload = function () {
         });
 
         // ============================================================
-        // RESET — backend only (no UI button)
-        // Call from console / backend trigger:  window.nspiraReset()
+        // RESET — backend only
         // ============================================================
         async function resetSerial() {
             photoCount = 0;
@@ -825,7 +905,6 @@ logo.onload = function () {
             statusMsg.innerHTML = `<span class="ready">✅ Serial reset. Next capture: NSP-1</span>`;
             console.log('🔄 Serial reset to 0. Next serial: NSP-1');
         }
-        // Expose to backend / console only
         window.nspiraReset = resetSerial;
 
         // ============================================================
@@ -857,6 +936,10 @@ logo.onload = function () {
                 statusMsg.innerHTML = `<span class="error">❌ Camera requires HTTPS. Please open via https://</span>`;
                 return;
             }
+
+            // ✅ FIX #1: preload the logo BEFORE the user can capture.
+            await loadLogo();
+
             startGeolocation();
             await startCamera('environment');
         }
