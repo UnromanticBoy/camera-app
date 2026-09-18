@@ -179,6 +179,11 @@
     height: 40px;
     object-fit: contain;
 }
+        .company-name-2 .icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
     </style>
 </head>
 <body>
@@ -653,7 +658,7 @@
             ctx.textBaseline = 'bottom';
             ctx.font = `${fsWater}px 'Courier New', monospace`;
             ctx.fillStyle = 'rgba(255,255,255,0.22)';
-            ctx.fillText('NSPIRA', vw - padX, stampY + stampHeight - Math.round(8 * base));
+            ctx.fillText('<img  class="company-name-2"src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo">', vw - padX, stampY + stampHeight - Math.round(8 * base));
 
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
