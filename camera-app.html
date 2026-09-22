@@ -323,7 +323,7 @@
         const CONFIG = {
             companyName: 'Captured By Nspira Camera',
             countPrefix: 'NSP-',
-            addressMaxLines: 4,          // ✅ allow up to 4 lines (natural wrapping)
+            addressMaxLines: 2,          // ✅ allow up to 4 lines (natural wrapping)
             addressCharsPerLine: 48,     // ✅ natural width, doesn't shrink text
             dbUploadUrl: '',
             dbApiKey: '',
@@ -694,14 +694,15 @@
 
             // Inside capturePhoto(), AFTER `ctx.drawImage(video, ...)`:
 
-// ✅ Stamp background — matches CSS .live-stamp exactly
+// ✅ Stamp background — TRANSPARENT (photo fully visible behind text)
+// Only a very faint dark tint so text stays readable; comment this out
+// entirely if you want zero tint.
 const stampY = videoHeight;
 const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
-gradient.addColorStop(0, 'rgba(20,20,40,0.35)');
-gradient.addColorStop(1, 'rgba(10,10,25,0.62)');
+gradient.addColorStop(0, 'rgba(0,0,0,0.10)');   // 10% — almost invisible
+gradient.addColorStop(1, 'rgba(0,0,0,0.25)');   // 25% — subtle
 ctx.fillStyle = gradient;
 ctx.fillRect(0, stampY, canvas.width, stampHeight);
-
 // ✅ Red accent line — matches CSS border-top
 ctx.strokeStyle = 'rgba(233,69,96,0.95)';
 ctx.lineWidth = 2.5;
