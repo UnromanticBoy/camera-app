@@ -694,25 +694,25 @@
 
             // Inside capturePhoto(), AFTER `ctx.drawImage(video, ...)`:
 
-// ✅ LIGHTER stamp background — photo clearly visible
+// ✅ Stamp background — matches CSS .live-stamp exactly
 const stampY = videoHeight;
 const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
-gradient.addColorStop(0, 'rgba(15,15,35,0.18)');   // very light at top
-gradient.addColorStop(1, 'rgba(10,10,25,0.42)');   // slightly darker at bottom
+gradient.addColorStop(0, 'rgba(20,20,40,0.35)');
+gradient.addColorStop(1, 'rgba(10,10,25,0.62)');
 ctx.fillStyle = gradient;
 ctx.fillRect(0, stampY, canvas.width, stampHeight);
 
-// Red accent line on top
-ctx.strokeStyle = 'rgba(233,69,96,1)';
-ctx.lineWidth = 3;
+// ✅ Red accent line — matches CSS border-top
+ctx.strokeStyle = 'rgba(233,69,96,0.95)';
+ctx.lineWidth = 2.5;
 ctx.beginPath();
 ctx.moveTo(0, stampY);
 ctx.lineTo(canvas.width, stampY);
 ctx.stroke();
 
-// ✅ Layout — padX is now ~4% of width (matches the reference)
-const padX = Math.round(canvas.width * 0.04);       // ~41px on 1024
-const padTop = 12;
+// ✅ Layout — matches CSS padding (10px top, 4% left/right)
+const padX = Math.round(canvas.width * 0.04);
+const padTop = 10;
 const lineGap = 4;
 
 const fsCompany = 22;
@@ -723,7 +723,6 @@ const fsCount = 40;
 
 let y = stampY + padTop;
 
-// Reset shadow state first
 ctx.shadowBlur = 0;
 ctx.shadowOffsetX = 0;
 ctx.shadowOffsetY = 0;
@@ -737,13 +736,13 @@ ctx.textBaseline = 'top';
 ctx.shadowColor = 'rgba(0,0,0,0.95)';
 ctx.shadowBlur = 5;
 ctx.shadowOffsetY = 1;
-ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
+ctx.font = `bold ${fsCompany}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
 ctx.fillStyle = '#ffffff';
 ctx.fillText(CONFIG.companyName, padX + 14, y);
 y += fsCompany + lineGap;
 
 // --- Address ---
-ctx.font = `${fsAddress}px 'Arial', 'Helvetica', sans-serif`;
+ctx.font = `${fsAddress}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
 ctx.fillStyle = '#dbe9ff';
 ctx.shadowBlur = 4;
 const addressLinesUsed = wrapByCharBudget(
@@ -769,7 +768,7 @@ ctx.fillStyle = '#ffe37a';
 ctx.shadowBlur = 4;
 ctx.fillText(`🕐 ${timestamp}  ${tzAbbr}`, padX, y);
 
-// --- Serial (top right) ---
+// --- Serial ---
 ctx.textAlign = 'right';
 ctx.textBaseline = 'top';
 ctx.shadowBlur = 5;
@@ -777,7 +776,7 @@ ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
 ctx.fillStyle = 'rgba(255,215,0,0.70)';
 ctx.fillText(countLabel, canvas.width - padX, stampY + padTop);
 
-// --- Logo (bottom right) ---
+// --- Logo ---
 ctx.shadowBlur = 0;
 ctx.shadowOffsetX = 0;
 ctx.shadowOffsetY = 0;
@@ -792,17 +791,14 @@ const logoLy = canvas.height - logoLh - 10;
 if (logoReady && logoImage) {
     try {
         ctx.drawImage(logoImage, logoLx, logoLy, logoLw, logoLh);
-        console.log('✅ Logo drawn');
     } catch (err) {
         console.error('❌ Logo draw failed:', err);
     }
 } else {
-    console.warn('⚠️ Logo NOT ready — drawing text fallback');
     ctx.font = `bold 20px 'Arial Black', Arial, sans-serif`;
     ctx.fillStyle = 'rgba(255,255,255,0.65)';
     ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 10);
 }
-
             // ✅ Convert the canvas to a JPEG blob
             try {
                 canvas.toBlob((blob) => {
