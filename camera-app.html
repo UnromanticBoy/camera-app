@@ -30,7 +30,6 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
         }
 
-        /* ✅ Header — logo removed, only title */
         .header {
             display: flex;
             align-items: center;
@@ -50,14 +49,14 @@
             text-overflow: ellipsis;
         }
 
-        /* ✅ Camera wrapper — now larger since info panel is gone */
+        /* ✅ FIX #2: Camera is now TALLER (3:4) for a roomier preview */
         .video-wrapper {
             position: relative;
             background: #0f0f23;
             border-radius: 14px;
             overflow: hidden;
             width: 100%;
-            aspect-ratio: 4 / 3;
+            aspect-ratio: 3 / 4;   /* taller preview */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -77,41 +76,41 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(180deg, rgba(10,10,25,0.75) 0%, rgba(5,5,15,0.95) 100%);
+            background: linear-gradient(180deg, rgba(10,10,25,0.78) 0%, rgba(5,5,15,0.96) 100%);
             border-top: 2.5px solid rgba(233, 69, 96, 0.85);
-            padding: 10px 12px;
+            padding: 12px 14px 14px;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             pointer-events: none;
             z-index: 5;
-            max-height: 58%;
             overflow: hidden;
         }
         .live-stamp .ls-company {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
             color: #ffffff;
             letter-spacing: 0.2px;
             line-height: 1.25;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
+            padding-right: 80px; /* leave room for serial */
         }
         .live-stamp .ls-company::before {
             content: '';
             display: inline-block;
             width: 4px;
-            height: 16px;
+            height: 18px;
             background: #e94560;
             border-radius: 2px;
             flex-shrink: 0;
         }
         .live-stamp .ls-address {
-            font-size: 12px;
+            font-size: 12.5px;
             color: #aac8ff;
-            line-height: 1.4;
-            margin-bottom: 4px;
+            line-height: 1.45;
+            margin-bottom: 5px;
             word-wrap: break-word;
             overflow-wrap: break-word;
             display: -webkit-box;
@@ -120,33 +119,36 @@
             overflow: hidden;
         }
         .live-stamp .ls-gps {
-            font-size: 11.5px;
+            font-size: 12px;
             color: #8bc34a;
             font-family: 'Courier New', monospace;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
         .live-stamp .ls-time {
-            font-size: 11.5px;
+            font-size: 12px;
             color: #ffd54f;
             font-family: 'Courier New', monospace;
+            padding-right: 90px; /* leave room for logo */
         }
         .live-stamp .ls-serial {
             position: absolute;
-            top: 8px;
-            right: 12px;
-            font-size: 20px;
+            top: 10px;
+            right: 14px;
+            font-size: 22px;
             font-weight: 900;
-            color: rgba(255, 215, 0, 0.4);
+            color: rgba(255, 215, 0, 0.42);
             font-family: 'Arial Black', Arial, sans-serif;
             letter-spacing: 0.5px;
         }
+        /* ✅ FIX #1: Company logo inside the live overlay */
         .live-stamp .ls-logo {
             position: absolute;
-            bottom: 8px;
-            right: 12px;
-            width: 80px;
+            bottom: 12px;
+            right: 14px;
+            width: 78px;
             height: auto;
-            opacity: 0.9;
+            opacity: 0.95;
+            display: block;
         }
 
         .flash {
@@ -156,7 +158,6 @@
         }
         .flash.active { opacity: 0.8; }
 
-        /* Medium buttons */
         .controls {
             display: flex;
             gap: 10px;
@@ -205,7 +206,6 @@
         }
         .preview-wrapper img { width: 100%; display: block; }
 
-        /* iOS overlay */
         .ios-overlay {
             display: none;
             position: fixed;
@@ -242,10 +242,11 @@
             .container { padding: 12px; }
             .header h1 { font-size: 15px; }
             .controls button { font-size: 12px; padding: 12px 6px; }
-            .live-stamp .ls-company { font-size: 12.5px; }
-            .live-stamp .ls-address { font-size: 10.5px; }
-            .live-stamp .ls-gps, .live-stamp .ls-time { font-size: 10px; }
-            .live-stamp .ls-serial { font-size: 16px; }
+            .live-stamp .ls-company { font-size: 13px; padding-right: 70px; }
+            .live-stamp .ls-address { font-size: 11px; }
+            .live-stamp .ls-gps, .live-stamp .ls-time { font-size: 10.5px; }
+            .live-stamp .ls-time { padding-right: 80px; }
+            .live-stamp .ls-serial { font-size: 18px; }
             .live-stamp .ls-logo { width: 65px; }
         }
     </style>
@@ -253,12 +254,10 @@
 <body>
 
     <div class="container">
-        <!-- ✅ Header — logo removed -->
         <div class="header">
             <h1>Nspira Photo Stamping</h1>
         </div>
 
-        <!-- Camera with live stamp overlay (info panel removed) -->
         <div class="video-wrapper" id="videoWrapper">
             <video id="video" autoplay playsinline muted></video>
 
@@ -268,7 +267,8 @@
                 <div class="ls-address" id="lsAddress">📍 Detecting address...</div>
                 <div class="ls-gps" id="lsGps">Lat --.------°   Long --.------°</div>
                 <div class="ls-time" id="lsTime">🕐 --/--/---- --:--:-- --</div>
-                <img class="ls-logo" id="lsLogo" src="https://mynspira.in/assets/images/logo-light.png" alt="logo">
+                <!-- ✅ FIX #1: Logo shown inside the live overlay -->
+                <img class="ls-logo" id="lsLogo" src="https://mynspira.in/assets/images/logo-light.png" alt="NSPIRA logo">
             </div>
 
             <div class="flash" id="flash"></div>
@@ -424,7 +424,7 @@
         }
 
         // ============================================================
-        // Update live overlay only (info panel removed)
+        // Update live overlay
         // ============================================================
         function updateUI() {
             const now = new Date();
