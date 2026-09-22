@@ -66,7 +66,6 @@
             top: 0; left: 0;
         }
 
-        /* ✅ Lighter overlay background */
         .live-stamp {
             position: absolute;
             left: 0;
@@ -177,6 +176,7 @@
         }
         .btn-capture { background: #e94560; color: white; }
         .btn-capture:active { background: #c73652; transform: scale(0.98); }
+        .btn-capture:disabled { background: #444; color: #888; cursor: not-allowed; }
         .btn-switch { background: #533483; color: white; }
         .btn-switch:active { background: #6a4b9e; }
         .btn-download { background: #0f3460; color: white; }
@@ -275,7 +275,7 @@
         </div>
 
         <div class="controls">
-            <button class="btn-capture" id="captureBtn">📷 Capture</button>
+            <button class="btn-capture" id="captureBtn" disabled>📷 Capture</button>
             <button class="btn-switch" id="switchBtn">🔄 Switch</button>
             <button class="btn-download" id="downloadBtn" disabled>⬇️ Download</button>
         </div>
@@ -310,15 +310,15 @@
             companyName: 'Captured By Nspira Camera',
             countPrefix: 'NSP-',
             addressMaxLines: 3,
-            addressCharsPerLine: 55,   // ✅ wider so address wraps less
+            addressCharsPerLine: 55,
             dbUploadUrl: '',
             dbApiKey: '',
             lsSerialKey: 'nspira_serial_count',
             logoDataUri: 'https://mynspira.in/assets/images/logo-light.png',
             outputWidth: 1024,
             outputHeight: 768,
-            // ✅ Compact stamp: 30% of total 4:3 height
-            stampRatioOfHeight: 0.30,
+            // ✅ FIXED: Stamp height = 24% of total 4:3 height (compact, matches reference)
+            stampRatioOfHeight: 0.24,
         };
 
         // ============================================================
@@ -355,6 +355,8 @@
         let serialCommitted = false;
         let currentGPS = { lat: null, lng: null, accuracy: null, address: 'Detecting address...' };
         let watchId = null;
+        // ✅ FIX: GPS ready flag — Capture button stays disabled until true
+        let gpsReady = false;
 
         let logoImage = null;
         let logoReady = false;
@@ -425,7 +427,7 @@
         }
 
         // ============================================================
-        // Update live overlay
+        // ✅ FIX: Update live overlay + enable/disable Capture button
         // ============================================================
         function updateUI() {
             const now = new Date();
@@ -444,6 +446,17 @@
                 lsAddress.textContent = `📍 ${currentGPS.address}`;
             } else {
                 lsAddress.textContent = '📍 Detecting address...';
+            }
+
+            // ✅ Enable capture only when GPS + address are ready
+            const addressReady = currentGPS.address &&
+                                 currentGPS.address !== 'Detecting address...' &&
+                                 currentGPS.address !== 'Address lookup failed' &&
+                                 currentGPS.address !== 'Address unavailable in English';
+            if (gpsReady && addressReady) {
+                captureBtn.disabled = false;
+            } else {
+                captureBtn.disabled = true;
             }
         }
 
@@ -531,6 +544,7 @@
                     currentGPS.lat = pos.coords.latitude;
                     currentGPS.lng = pos.coords.longitude;
                     currentGPS.accuracy = pos.coords.accuracy;
+                    gpsReady = true;       // ✅ mark GPS as ready
                     updateUI();
                     await getLocationName(currentGPS.lat, currentGPS.lng);
                 },
@@ -550,6 +564,7 @@
                     currentGPS.lat = pos.coords.latitude;
                     currentGPS.lng = pos.coords.longitude;
                     currentGPS.accuracy = pos.coords.accuracy;
+                    if (!gpsReady) gpsReady = true;
                     updateUI();
                     if (moved) {
                         await getLocationName(currentGPS.lat, currentGPS.lng);
@@ -618,10 +633,11 @@
         }
 
         // ============================================================
-        // ✅ Capture — compact stamp, visible logo, lighter bg
+        // ✅ Capture — matches the reference layout
         // ============================================================
         async function capturePhoto() {
             if (!stream) { alert('Camera not ready.'); return; }
+            if (!gpsReady) { alert('Waiting for GPS location...'); return; }
 
             flash.classList.add('active');
             setTimeout(() => flash.classList.remove('active'), 150);
@@ -640,13 +656,13 @@
             const lngStr = lng !== null ? `${lng.toFixed(6)}°` : '--.------°';
 
             const canvas = document.createElement('canvas');
-            canvas.width = CONFIG.outputWidth;   // 1024
-            canvas.height = CONFIG.outputHeight; // 768
+            canvas.width = CONFIG.outputWidth;
+            canvas.height = CONFIG.outputHeight;
             const ctx = canvas.getContext('2d');
 
-            // ✅ Compact stamp: 30% of 4:3 height
-            const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight); // ~230px
-            const videoHeight = canvas.height - stampHeight;                            // ~538px
+            // ✅ Compact stamp: 24% of 4:3 height
+            const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight); // ~184px
+            const videoHeight = canvas.height - stampHeight;                            // ~584px
 
             // Video (center-crop fill)
             const vw = video.videoWidth || 1280;
@@ -664,50 +680,51 @@
             }
             ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, videoHeight);
 
-            // ✅ Lighter stamp background — image visible behind
+            // ✅ Lighter stamp background — photo visible behind
             const stampY = videoHeight;
             const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
-            gradient.addColorStop(0, 'rgba(15,15,35,0.55)');
-            gradient.addColorStop(1, 'rgba(10,10,25,0.78)');
+            gradient.addColorStop(0, 'rgba(20,20,40,0.55)');
+            gradient.addColorStop(1, 'rgba(15,15,30,0.72)');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, stampY, canvas.width, stampHeight);
 
             // Red accent line
-            ctx.strokeStyle = 'rgba(233,69,96,0.95)';
+            ctx.strokeStyle = 'rgba(233,69,96,1)';
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(0, stampY);
             ctx.lineTo(canvas.width, stampY);
             ctx.stroke();
 
-            const padX = 18;
-            const padTop = 10;
-            const lineGap = 4;
+            // Layout constants (compact, matches reference)
+            const padX = 16;
+            const padTop = 8;
+            const lineGap = 3;
 
-            const fsCompany = 20;
-            const fsAddress = 15;
-            const fsGPS = 15;
-            const fsTime = 15;
-            const fsCount = 34;
+            const fsCompany = 19;
+            const fsAddress = 14;
+            const fsGPS = 14;
+            const fsTime = 14;
+            const fsCount = 32;
 
             let y = stampY + padTop;
 
             // Red accent bar
             ctx.fillStyle = '#e94560';
-            ctx.fillRect(padX, y + 2, 4, fsCompany - 2);
+            ctx.fillRect(padX, y + 3, 4, fsCompany - 4);
 
             // Company name
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
             ctx.fillStyle = '#ffffff';
-            ctx.shadowColor = 'rgba(0,0,0,0.9)';
+            ctx.shadowColor = 'rgba(0,0,0,0.95)';
             ctx.shadowBlur = 4;
             ctx.shadowOffsetY = 1;
             ctx.fillText(CONFIG.companyName, padX + 12, y);
             y += fsCompany + lineGap;
 
-            // Address — wraps to 2-3 lines
+            // Address — wraps 2–3 lines
             const addressLinesUsed = wrapByCharBudget(
                 `📍 ${address}`,
                 CONFIG.addressCharsPerLine,
@@ -738,8 +755,8 @@
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
-            ctx.fillStyle = 'rgba(255,215,0,0.6)';
-            ctx.shadowColor = 'rgba(0,0,0,0.9)';
+            ctx.fillStyle = 'rgba(255,215,0,0.65)';
+            ctx.shadowColor = 'rgba(0,0,0,0.95)';
             ctx.shadowBlur = 4;
             ctx.fillText(countLabel, canvas.width - padX, stampY + padTop);
 
@@ -748,11 +765,11 @@
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
 
-            // ✅ Logo — bottom-right, clearly visible
-            const logoLw = 140;
-            const logoLh = 42;
+            // ✅ Logo at bottom-right — clearly visible
+            const logoLw = 130;
+            const logoLh = 38;
             const logoLx = canvas.width - padX - logoLw;
-            const logoLy = canvas.height - logoLh - 10;
+            const logoLy = canvas.height - logoLh - 8;
 
             let logoDrawn = false;
             if (logoReady && logoImage) {
@@ -767,8 +784,8 @@
                 ctx.textAlign = 'right';
                 ctx.textBaseline = 'bottom';
                 ctx.font = `bold 18px 'Arial Black', Arial, sans-serif`;
-                ctx.fillStyle = 'rgba(255,255,255,0.55)';
-                ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 12);
+                ctx.fillStyle = 'rgba(255,255,255,0.65)';
+                ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 10);
             }
 
             try {
