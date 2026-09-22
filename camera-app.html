@@ -30,90 +30,27 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
         }
 
-        /* Header — medium size */
+        /* ✅ Header — logo removed, only title */
         .header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
             margin-bottom: 14px;
             padding-bottom: 12px;
             border-bottom: 2px solid #e94560;
         }
-        .header .nspira-logo {
-            width: 120px;
-            height: auto;
-            display: block;
-        }
         .header h1 {
-            font-size: 16px;
+            font-size: 18px;
             color: #e94560;
             font-weight: 700;
-            letter-spacing: 0.2px;
-            flex: 1;
-            text-align: right;
+            letter-spacing: 0.3px;
+            text-align: center;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        /* ✅ Restored company info panel — medium size, balanced */
-        .info-div {
-            background: #0f0f23;
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 14px;
-            border: 1px solid #2a2a4a;
-            font-size: 13.5px;
-            line-height: 1.7;
-            color: #ddd;
-            user-select: none;
-            -webkit-user-select: none;
-            pointer-events: none;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
-
-        .info-div .company-name {
-            color: #e94560;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            line-height: 1.3;
-            margin-bottom: 6px;
-        }
-        .info-div .company-name .icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .info-div .company-name .icon img {
-            width: 30px;
-            height: 30px;
-            object-fit: contain;
-            display: block;
-        }
-        .info-div .company-name .company-text {
-            display: inline;
-            line-height: 1.3;
-            word-break: break-word;
-            flex: 1 1 auto;
-            min-width: 0;
-        }
-
-        .info-div .gps-line { color: #4fc3f7; font-size: 13px; font-weight: 500; }
-        .info-div .gps-line .map-link { color: #4fc3f7; text-decoration: none; pointer-events: auto; cursor: pointer; }
-        .info-div .gps-line .map-link:hover { text-decoration: underline; }
-        .info-div .address-line { color: #aac8ff; font-size: 12.5px; margin-top: 4px; line-height: 1.55; }
-        .info-div .time-line { color: #ffd54f; font-size: 13.5px; font-weight: 600; margin-top: 4px; }
-        .info-div .divider { color: #444; margin: 0 4px; }
-        .info-div .icon { margin-right: 6px; }
-
-        /* Camera wrapper with live overlay */
+        /* ✅ Camera wrapper — now larger since info panel is gone */
         .video-wrapper {
             position: relative;
             background: #0f0f23;
@@ -303,11 +240,7 @@
 
         @media (max-width: 400px) {
             .container { padding: 12px; }
-            .header .nspira-logo { width: 95px; }
-            .header h1 { font-size: 13px; }
-            .info-div { font-size: 12px; padding: 12px; line-height: 1.6; }
-            .info-div .company-name { font-size: 13.5px; gap: 6px; }
-            .info-div .company-name .icon img { width: 26px; height: 26px; }
+            .header h1 { font-size: 15px; }
             .controls button { font-size: 12px; padding: 12px 6px; }
             .live-stamp .ls-company { font-size: 12.5px; }
             .live-stamp .ls-address { font-size: 10.5px; }
@@ -320,34 +253,12 @@
 <body>
 
     <div class="container">
-        <!-- Header -->
+        <!-- ✅ Header — logo removed -->
         <div class="header">
-            <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo" class="nspira-logo">
             <h1>Nspira Photo Stamping</h1>
         </div>
 
-        <!-- ✅ Restored company / GPS / time panel (medium size) -->
-        <div class="info-div" id="infoDiv">
-            <div class="company-name">
-                <span class="icon">
-                    <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo">
-                </span>
-                <span class="company-text">Nspira Camera (By Electrical F&amp;A)</span>
-            </div>
-            <div class="gps-line" id="gpsLine">
-                <span class="icon">📍</span> GPS: <span id="gpsCoords">Waiting for GPS...</span>
-                <span class="divider"></span>
-                <a href="#" id="mapLink" class="map-link" target="_blank" rel="noopener"></a>
-            </div>
-            <div class="address-line" id="addressLine">
-                <span class="icon">🏠</span> <span id="fullAddress">Detecting address...</span>
-            </div>
-            <div class="time-line" id="timeLine">
-                <span class="icon">🕐</span> Date &amp; Time: <span id="dateTimeDisplay">--/--/---- --:--:-- --</span>
-            </div>
-        </div>
-
-        <!-- Camera with live stamp overlay -->
+        <!-- Camera with live stamp overlay (info panel removed) -->
         <div class="video-wrapper" id="videoWrapper">
             <video id="video" autoplay playsinline muted></video>
 
@@ -404,7 +315,6 @@
             dbApiKey: '',
             lsSerialKey: 'nspira_serial_count',
             logoDataUri: 'https://mynspira.in/assets/images/logo-light.png',
-            // ✅ 4:3 output canvas
             outputWidth: 1024,
             outputHeight: 768,
             stampRatioOfHeight: 0.38,
@@ -422,11 +332,6 @@
         const previewImage = document.getElementById('previewImage');
         const flash = document.getElementById('flash');
         const statusMsg = document.getElementById('statusMsg');
-
-        const gpsCoords = document.getElementById('gpsCoords');
-        const fullAddress = document.getElementById('fullAddress');
-        const dateTimeDisplay = document.getElementById('dateTimeDisplay');
-        const mapLink = document.getElementById('mapLink');
 
         const lsSerial = document.getElementById('lsSerial');
         const lsAddress = document.getElementById('lsAddress');
@@ -519,25 +424,16 @@
         }
 
         // ============================================================
-        // Update BOTH the info panel AND the live overlay
+        // Update live overlay only (info panel removed)
         // ============================================================
         function updateUI() {
             const now = new Date();
             const serial = getNextSerialNumber();
             lsSerial.textContent = `${CONFIG.countPrefix}${serial}`;
-            dateTimeDisplay.textContent = formatDateTime12hr(now);
 
             if (currentGPS.lat !== null && currentGPS.lng !== null) {
-                const latStr = currentGPS.lat.toFixed(6);
-                const lngStr = currentGPS.lng.toFixed(6);
-                gpsCoords.textContent = `Lat ${latStr}° Long ${lngStr}°`;
-                mapLink.href = `https://www.google.com/maps?q=${currentGPS.lat},${currentGPS.lng}`;
-                fullAddress.textContent = currentGPS.address || 'Detecting address...';
-                lsGps.textContent = `Lat ${latStr}°   Long ${lngStr}°`;
+                lsGps.textContent = `Lat ${currentGPS.lat.toFixed(6)}°   Long ${currentGPS.lng.toFixed(6)}°`;
             } else {
-                gpsCoords.textContent = 'Waiting for GPS...';
-                fullAddress.textContent = 'Detecting address...';
-                mapLink.href = '#';
                 lsGps.textContent = 'Lat --.------°   Long --.------°';
             }
 
@@ -626,8 +522,7 @@
         // ============================================================
         function startGeolocation() {
             if (!navigator.geolocation) {
-                gpsCoords.textContent = '❌ GPS not available';
-                fullAddress.textContent = 'GPS not supported';
+                lsAddress.textContent = '📍 GPS not supported';
                 return;
             }
             navigator.geolocation.getCurrentPosition(
@@ -639,8 +534,7 @@
                     await getLocationName(currentGPS.lat, currentGPS.lng);
                 },
                 () => {
-                    gpsCoords.textContent = '❌ GPS error';
-                    fullAddress.textContent = 'Location unavailable';
+                    lsAddress.textContent = '📍 Location unavailable';
                 },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
             );
@@ -752,7 +646,6 @@
             const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight);
             const videoHeight = canvas.height - stampHeight;
 
-            // Center-crop video into top region
             const vw = video.videoWidth || 1280;
             const vh = video.videoHeight || 720;
             const targetAR = canvas.width / videoHeight;
@@ -768,7 +661,6 @@
             }
             ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, videoHeight);
 
-            // Stamp background
             const stampY = videoHeight;
             const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
             gradient.addColorStop(0, 'rgba(10,10,25,0.94)');
@@ -795,7 +687,6 @@
 
             let y = stampY + padTop;
 
-            // Company name with red accent
             ctx.fillStyle = '#e94560';
             ctx.fillRect(padX, y + 2, 4, fsCompany - 2);
 
@@ -809,7 +700,6 @@
             ctx.fillText(CONFIG.companyName, padX + 12, y);
             y += fsCompany + lineGap;
 
-            // Address
             const addressLinesUsed = wrapByCharBudget(
                 `📍 ${address}`,
                 CONFIG.addressCharsPerLine,
@@ -823,20 +713,17 @@
                 y += fsAddress + lineGap;
             }
 
-            // GPS
             ctx.font = `${fsGPS}px 'Courier New', monospace`;
             ctx.fillStyle = '#8bc34a';
             ctx.shadowBlur = 2;
             ctx.fillText(`Lat ${latStr}   Long ${lngStr}`, padX, y);
             y += fsGPS + lineGap;
 
-            // Time
             ctx.font = `${fsTime}px 'Courier New', monospace`;
             ctx.fillStyle = '#ffd54f';
             ctx.shadowBlur = 2;
             ctx.fillText(`🕐 ${timestamp}  ${tzAbbr}`, padX, y);
 
-            // Serial
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
@@ -844,7 +731,6 @@
             ctx.shadowBlur = 0;
             ctx.fillText(countLabel, canvas.width - padX, stampY + padTop);
 
-            // Logo
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
