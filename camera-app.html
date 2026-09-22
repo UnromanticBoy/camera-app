@@ -17,85 +17,46 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 16px;
+            padding: 12px;
             -webkit-tap-highlight-color: transparent;
         }
 
         .container {
-            max-width: 500px;
+            max-width: 480px;
             width: 100%;
             background: #16213e;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 14px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
         }
 
+        /* Compact header */
         .header {
-            text-align: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #e94560;
-        }
-
-        .header h1 { font-size: 18px; color: #e94560; font-weight: 700; }
-
-        .info-div {
-            background: #0f0f23;
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 14px;
-            border: 1px solid #2a2a4a;
-            font-size: 13px;
-            line-height: 1.8;
-            color: #ddd;
-            user-select: none;
-            -webkit-user-select: none;
-            pointer-events: none;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
-
-        .info-div .company-name {
-            color: #e94560;
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
             gap: 8px;
-            line-height: 1.3;
-            margin-bottom: 4px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1.5px solid #e94560;
         }
-        .info-div .company-name .icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-right: 0;
-        }
-        .info-div .company-name .icon img {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
+        .header .nspira-logo {
+            width: 90px;
+            height: auto;
             display: block;
         }
-        .info-div .company-name .company-text {
-            display: inline;
-            line-height: 1.3;
-            word-break: break-word;
-            flex: 1 1 auto;
-            min-width: 0;
+        .header h1 {
+            font-size: 13px;
+            color: #e94560;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            flex: 1;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .info-div .gps-line { color: #4fc3f7; font-size: 13px; font-weight: 500; }
-        .info-div .gps-line .map-link { color: #4fc3f7; text-decoration: none; pointer-events: auto; cursor: pointer; }
-        .info-div .gps-line .map-link:hover { text-decoration: underline; }
-        .info-div .address-line { color: #aac8ff; font-size: 12px; margin-top: 4px; }
-        .info-div .time-line { color: #ffd54f; font-size: 14px; font-weight: 600; }
-        .info-div .divider { color: #444; margin: 0 4px; }
-        .info-div .icon { margin-right: 6px; }
-
+        /* ✅ Camera wrapper — with overlay for address/GPS/time on the image */
         .video-wrapper {
             position: relative;
             background: #0f0f23;
@@ -107,37 +68,142 @@
             align-items: center;
             justify-content: center;
         }
-        #video { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-            flex-wrap: wrap;
-            justify-content: center;
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            position: absolute;
+            top: 0; left: 0;
         }
 
+        /* ✅ Live overlay showing what will be stamped on the photo */
+        .live-stamp {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(10,10,25,0.75) 0%, rgba(5,5,15,0.95) 100%);
+            border-top: 2px solid rgba(233, 69, 96, 0.7);
+            padding: 8px 10px;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            pointer-events: none;
+            z-index: 5;
+            max-height: 55%;
+            overflow: hidden;
+        }
+        .live-stamp .ls-company {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.2px;
+            line-height: 1.2;
+            margin-bottom: 3px;
+        }
+        .live-stamp .ls-company::before {
+            content: '';
+            display: inline-block;
+            width: 3px;
+            height: 13px;
+            background: #e94560;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .live-stamp .ls-address {
+            font-size: 10.5px;
+            color: #aac8ff;
+            line-height: 1.35;
+            margin-bottom: 3px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .live-stamp .ls-gps {
+            font-size: 10px;
+            color: #8bc34a;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 2px;
+        }
+        .live-stamp .ls-time {
+            font-size: 10px;
+            color: #ffd54f;
+            font-family: 'Courier New', monospace;
+        }
+        .live-stamp .ls-serial {
+            position: absolute;
+            top: 6px;
+            right: 10px;
+            font-size: 16px;
+            font-weight: 900;
+            color: rgba(255, 215, 0, 0.35);
+            font-family: 'Arial Black', Arial, sans-serif;
+            letter-spacing: 0.5px;
+        }
+        .live-stamp .ls-logo {
+            position: absolute;
+            bottom: 6px;
+            right: 10px;
+            width: 60px;
+            height: auto;
+            opacity: 0.9;
+        }
+
+        /* Flash */
+        .flash {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: white; opacity: 0; pointer-events: none; transition: opacity 0.1s;
+            z-index: 10;
+        }
+        .flash.active { opacity: 0.8; }
+
+        /* Compact controls */
+        .controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
         .controls button {
-            padding: 12px 20px;
+            padding: 12px 8px;
             border: none;
-            border-radius: 50px;
-            font-size: 14px;
+            border-radius: 10px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             flex: 1;
-            min-width: 90px;
+            min-width: 0;
         }
         .btn-capture { background: #e94560; color: white; }
-        .btn-capture:hover { background: #c73652; transform: scale(1.02); }
+        .btn-capture:active { background: #c73652; transform: scale(0.98); }
         .btn-switch { background: #533483; color: white; }
-        .btn-switch:hover { background: #6a4b9e; }
+        .btn-switch:active { background: #6a4b9e; }
         .btn-download { background: #0f3460; color: white; }
-        .btn-download:hover { background: #1a4a7a; }
+        .btn-download:active { background: #1a4a7a; }
         .btn-download:disabled { background: #444; color: #888; cursor: not-allowed; }
 
+        .status-msg {
+            margin-top: 8px;
+            text-align: center;
+            font-size: 11.5px;
+            color: #888;
+            padding: 6px;
+            border-radius: 8px;
+            background: #0f0f23;
+            min-height: 26px;
+        }
+        .status-msg .ready { color: #4caf50; }
+        .status-msg .error { color: #e94560; }
+        .status-msg .warn { color: #ffb74d; }
+
         .preview-wrapper {
-            margin-top: 16px;
+            margin-top: 10px;
             display: none;
             border-radius: 12px;
             overflow: hidden;
@@ -145,30 +211,8 @@
             position: relative;
         }
         .preview-wrapper img { width: 100%; display: block; }
-        .preview-label {
-            position: absolute; bottom: 10px; right: 12px;
-            color: rgba(255,255,255,0.5); font-size: 11px;
-            font-family: 'Courier New', monospace;
-            background: rgba(0,0,0,0.5); padding: 2px 10px;
-            border-radius: 4px; pointer-events: none;
-        }
 
-        .status-msg {
-            margin-top: 12px; text-align: center; font-size: 13px;
-            color: #888; padding: 8px; border-radius: 8px;
-            background: #0f0f23;
-            user-select: none; -webkit-user-select: none;
-        }
-        .status-msg .ready { color: #4caf50; }
-        .status-msg .error { color: #e94560; }
-        .status-msg .warn { color: #ffb74d; }
-
-        .flash {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: white; opacity: 0; pointer-events: none; transition: opacity 0.1s;
-        }
-        .flash.active { opacity: 0.8; }
-
+        /* iOS overlay */
         .ios-overlay {
             display: none;
             position: fixed;
@@ -181,81 +225,61 @@
             padding: 20px;
         }
         .ios-overlay.active { display: flex; }
-        .ios-overlay img { max-width: 100%; max-height: 70vh; border-radius: 12px; border: 2px solid #e94560; }
+        .ios-overlay img { max-width: 100%; max-height: 65vh; border-radius: 12px; border: 2px solid #e94560; }
         .ios-overlay .hint {
-            color: #fff; margin-top: 20px; font-size: 15px; text-align: center;
-            line-height: 1.6;
+            color: #fff; margin-top: 16px; font-size: 14px; text-align: center;
+            line-height: 1.5;
         }
         .ios-overlay .hint strong { color: #ffd54f; }
         .ios-overlay .close-btn {
-            margin-top: 20px; padding: 12px 30px; border-radius: 50px;
+            margin-top: 16px; padding: 12px 30px; border-radius: 50px;
             background: #e94560; color: white; border: none;
             font-size: 15px; font-weight: 600; cursor: pointer;
         }
         .ios-overlay .action-row {
-            display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; justify-content: center;
+            display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; justify-content: center;
         }
         .ios-overlay .action-row button {
             padding: 12px 24px; border-radius: 50px; border: none;
             font-size: 14px; font-weight: 600; cursor: pointer;
         }
-        .ios-overlay .btn-share { background: #0f3460; color: white; }
         .ios-overlay .btn-save { background: #4caf50; color: white; }
 
-        @media (max-width: 480px) {
-            .container { padding: 12px; }
-            .controls button { font-size: 12px; padding: 10px 12px; min-width: 70px; }
-            .header h1 { font-size: 15px; }
-            .info-div { font-size: 11px; padding: 10px; line-height: 1.6; }
-            .info-div .company-name { font-size: 13px; gap: 6px; }
-            .info-div .company-name .icon img { width: 24px; height: 24px; }
-            .info-div .company-name .company-text { font-size: 13px; }
-        }
-        .company-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 20px;
-        }
-
-        .nspira-logo {
-            width: 150px;
-            height: auto;
+        @media (max-width: 380px) {
+            .header h1 { font-size: 11px; }
+            .header .nspira-logo { width: 70px; }
+            .controls button { font-size: 11px; padding: 10px 4px; }
+            .live-stamp .ls-company { font-size: 11px; }
+            .live-stamp .ls-address { font-size: 9.5px; }
+            .live-stamp .ls-gps, .live-stamp .ls-time { font-size: 9px; }
+            .live-stamp .ls-serial { font-size: 13px; }
+            .live-stamp .ls-logo { width: 50px; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <!-- Compact header -->
         <div class="header">
-            <h1 class="company-title">
-    <img 
-        src="https://mynspira.in/assets/images/logo-light.png" 
-        alt="Nspira Logo"class="nspira-logo"><span>Nspira Photo Stamping</span></h1>
+            <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo" class="nspira-logo">
+            <h1>Nspira Photo Stamping</h1>
         </div>
 
-        <div class="info-div" id="infoDiv">
-            <div class="company-name">
-                <span class="icon">
-                    <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo">
-                </span>
-                <span class="company-text">Nspira Camera(By Electrical F&amp;A)</span>
-            </div>
-            <div class="gps-line" id="gpsLine">
-                <span class="icon">📍</span> GPS: <span id="gpsCoords">Waiting for GPS...</span>
-                <span class="divider"></span>
-                <a href="#" id="mapLink" class="map-link" target="_blank" rel="noopener"></a>
-            </div>
-            <div class="address-line" id="addressLine">
-                <span class="icon">🏠</span> <span id="fullAddress">Detecting address...</span>
-            </div>
-            <div class="time-line" id="timeLine">
-                <span class="icon">🕐</span> Date &amp; Time: <span id="dateTimeDisplay">--/--/---- --:--:-- --</span>
-            </div>
-        </div>
-
+        <!-- Camera with live stamp overlay -->
         <div class="video-wrapper" id="videoWrapper">
             <video id="video" autoplay playsinline muted></video>
+
+            <!-- ✅ Live overlay: exactly what will be printed on the saved image -->
+            <div class="live-stamp" id="liveStamp">
+                <div class="ls-serial" id="lsSerial">NSP-1</div>
+                <div class="ls-company">Captured By Nspira Camera</div>
+                <div class="ls-address" id="lsAddress">📍 Detecting address...</div>
+                <div class="ls-gps" id="lsGps">Lat --.------°   Long --.------°</div>
+                <div class="ls-time" id="lsTime">🕐 --/--/---- --:--:-- --</div>
+                <img class="ls-logo" id="lsLogo" src="https://mynspira.in/assets/images/logo-light.png" alt="logo">
+            </div>
+
             <div class="flash" id="flash"></div>
         </div>
 
@@ -271,7 +295,6 @@
 
         <div class="preview-wrapper" id="previewWrapper">
             <img id="previewImage" alt="Captured preview" />
-            <div class="preview-label">NSPIRA</div>
         </div>
     </div>
 
@@ -295,21 +318,17 @@
         const CONFIG = {
             companyName: 'Captured By Nspira Camera',
             countPrefix: 'NSP-',
-            timeFormat: '12hr',
-            countFontSize: 28,
             addressMaxLines: 3,
-            addressCharsPerLine: 45,
+            addressCharsPerLine: 42,
             dbUploadUrl: '',
             dbApiKey: '',
             lsSerialKey: 'nspira_serial_count',
             logoDataUri: 'https://mynspira.in/assets/images/logo-light.png',
-            logoWidth: 110,
-            logoHeight: 36,
-            // ✅ FIX #3: Cap the image size so it's not lengthy
-            maxImageWidth: 1000,
-            maxVideoHeight: 750,
-            // ✅ FIX #3: Compact stamp height
-            stampPadding: 10,
+            // ✅ FIX #1: Output canvas is exactly 4:3
+            outputWidth: 1024,      // 4:3 => 1024 x 768
+            outputHeight: 768,
+            // Stamp takes the bottom portion of the 4:3 canvas
+            stampRatioOfHeight: 0.38,   // stamp = ~38% of total height
         };
 
         // ============================================================
@@ -325,10 +344,10 @@
         const flash = document.getElementById('flash');
         const statusMsg = document.getElementById('statusMsg');
 
-        const gpsCoords = document.getElementById('gpsCoords');
-        const fullAddress = document.getElementById('fullAddress');
-        const dateTimeDisplay = document.getElementById('dateTimeDisplay');
-        const mapLink = document.getElementById('mapLink');
+        const lsSerial = document.getElementById('lsSerial');
+        const lsAddress = document.getElementById('lsAddress');
+        const lsGps = document.getElementById('lsGps');
+        const lsTime = document.getElementById('lsTime');
 
         const iosOverlay = document.getElementById('iosOverlay');
         const iosOverlayImg = document.getElementById('iosOverlayImg');
@@ -368,8 +387,8 @@
                     console.log('✅ Logo preloaded:', img.naturalWidth + 'x' + img.naturalHeight);
                     resolve(true);
                 };
-                img.onerror = (e) => {
-                    console.warn('⚠️ Logo failed to load — stamp will show text fallback.', e);
+                img.onerror = () => {
+                    console.warn('⚠️ Logo failed to load — stamp will show text fallback.');
                     logoReady = false;
                     resolve(false);
                 };
@@ -418,28 +437,33 @@
         }
 
         // ============================================================
-        // Update info div
+        // ✅ FIX #2: Live overlay updates — mirrors what the image will show
         // ============================================================
-        function updateInfoDiv() {
-            dateTimeDisplay.textContent = formatDateTime12hr();
+        function updateLiveOverlay() {
+            const now = new Date();
+            const serial = getNextSerialNumber();
+            lsSerial.textContent = `${CONFIG.countPrefix}${serial}`;
+
             if (currentGPS.lat !== null && currentGPS.lng !== null) {
-                const latStr = currentGPS.lat.toFixed(6);
-                const lngStr = currentGPS.lng.toFixed(6);
-                gpsCoords.textContent = `Lat ${latStr}° Long ${lngStr}°`;
-                mapLink.href = `https://www.google.com/maps?q=${currentGPS.lat},${currentGPS.lng}`;
-                fullAddress.textContent = currentGPS.address || 'Detecting address...';
+                lsGps.textContent = `Lat ${currentGPS.lat.toFixed(6)}°   Long ${currentGPS.lng.toFixed(6)}°`;
             } else {
-                gpsCoords.textContent = 'Waiting for GPS...';
-                fullAddress.textContent = 'Detecting address...';
-                mapLink.href = '#';
+                lsGps.textContent = 'Lat --.------°   Long --.------°';
+            }
+
+            lsTime.textContent = `🕐 ${formatDateTime12hr(now)} ${getTimezoneAbbr()}`;
+
+            if (currentGPS.address && currentGPS.address !== 'Detecting address...') {
+                lsAddress.textContent = `📍 ${currentGPS.address}`;
+            } else {
+                lsAddress.textContent = '📍 Detecting address...';
             }
         }
 
-        setInterval(updateInfoDiv, 1000);
-        updateInfoDiv();
+        setInterval(updateLiveOverlay, 1000);
+        updateLiveOverlay();
 
         // ============================================================
-        // ✅ FIX #2: Enhanced reverse geocoding with building priority
+        // Reverse geocoding — building / place name priority
         // ============================================================
         function isEnglishText(str) {
             if (!str) return false;
@@ -449,7 +473,6 @@
         function buildFullAddress(addr, displayName) {
             const parts = [];
 
-            // Priority: specific building/amenity/POI names first
             const specific = [
                 addr.building,
                 addr.amenity,
@@ -504,7 +527,6 @@
 
         async function getLocationName(lat, lng) {
             try {
-                // ✅ zoom=18 gives building/street level detail
                 const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=en&extratags=1`;
                 const response = await fetch(url, {
                     headers: { 'Accept': 'application/json', 'Accept-Language': 'en' }
@@ -521,7 +543,7 @@
                 console.warn('Reverse geocoding error:', err);
                 currentGPS.address = 'Address lookup failed';
             }
-            fullAddress.textContent = currentGPS.address;
+            updateLiveOverlay();
             return currentGPS.address;
         }
 
@@ -530,8 +552,7 @@
         // ============================================================
         function startGeolocation() {
             if (!navigator.geolocation) {
-                gpsCoords.textContent = '❌ GPS not available';
-                fullAddress.textContent = 'GPS not supported';
+                lsAddress.textContent = '📍 GPS not supported';
                 return;
             }
             navigator.geolocation.getCurrentPosition(
@@ -539,13 +560,11 @@
                     currentGPS.lat = pos.coords.latitude;
                     currentGPS.lng = pos.coords.longitude;
                     currentGPS.accuracy = pos.coords.accuracy;
-                    updateInfoDiv();
+                    updateLiveOverlay();
                     await getLocationName(currentGPS.lat, currentGPS.lng);
-                    updateInfoDiv();
                 },
                 () => {
-                    gpsCoords.textContent = `❌ GPS error`;
-                    fullAddress.textContent = 'Location unavailable';
+                    lsAddress.textContent = '📍 Location unavailable';
                 },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
             );
@@ -560,10 +579,9 @@
                     currentGPS.lat = pos.coords.latitude;
                     currentGPS.lng = pos.coords.longitude;
                     currentGPS.accuracy = pos.coords.accuracy;
-                    updateInfoDiv();
+                    updateLiveOverlay();
                     if (moved) {
                         await getLocationName(currentGPS.lat, currentGPS.lng);
-                        updateInfoDiv();
                     }
                 },
                 () => {},
@@ -574,11 +592,6 @@
         // ============================================================
         // Camera
         // ============================================================
-        function setVideoAspect(vw, vh) {
-            if (!vw || !vh) return;
-            videoWrapper.style.aspectRatio = `${vw} / ${vh}`;
-        }
-
         async function startCamera(faceMode) {
             try {
                 if (stream) stream.getTracks().forEach(t => t.stop());
@@ -589,11 +602,6 @@
                 stream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = stream;
                 await video.play();
-                const sync = () => {
-                    if (video.videoWidth && video.videoHeight) setVideoAspect(video.videoWidth, video.videoHeight);
-                };
-                if (video.readyState >= 1) sync();
-                video.onloadedmetadata = sync;
                 statusMsg.innerHTML = `<span class="ready">✅ Camera ready (${faceMode === 'environment' ? 'Rear' : 'Front'})</span>`;
                 return true;
             } catch (err) {
@@ -640,7 +648,7 @@
         }
 
         // ============================================================
-        // ✅ FIX #3: Compact, professional capture
+        // ✅ FIX #1: Capture at exact 4:3 (1024x768 total)
         // ============================================================
         async function capturePhoto() {
             if (!stream) { alert('Camera not ready.'); return; }
@@ -661,143 +669,136 @@
             const latStr = lat !== null ? `${lat.toFixed(6)}°` : '--.------°';
             const lngStr = lng !== null ? `${lng.toFixed(6)}°` : '--.------°';
 
+            // Final canvas = 4:3 (1024x768)
             const canvas = document.createElement('canvas');
+            canvas.width = CONFIG.outputWidth;   // 1024
+            canvas.height = CONFIG.outputHeight; // 768
             const ctx = canvas.getContext('2d');
 
+            // Stamp region occupies bottom portion of the 4:3 canvas
+            const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight); // ~292px
+            const videoHeight = canvas.height - stampHeight;                            // ~476px
+
+            // Draw the video frame into the top region, cropping to fill
             const vw = video.videoWidth || 1280;
             const vh = video.videoHeight || 720;
+            const targetAR = canvas.width / videoHeight;
+            const srcAR = vw / vh;
 
-            // ✅ FIX #3: Scale down video so total image is normal size
-            const videoScale = Math.min(
-                CONFIG.maxImageWidth / vw,
-                CONFIG.maxVideoHeight / vh
-            );
-            const outVW = Math.round(vw * videoScale);
-            const outVH = Math.round(vh * videoScale);
+            let sx = 0, sy = 0, sWidth = vw, sHeight = vh;
+            if (srcAR > targetAR) {
+                // Video is wider — crop sides
+                sWidth = Math.round(vh * targetAR);
+                sx = Math.round((vw - sWidth) / 2);
+            } else {
+                // Video is taller — crop top/bottom
+                sHeight = Math.round(vw / targetAR);
+                sy = Math.round((vh - sHeight) / 2);
+            }
+            ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, videoHeight);
 
-            // Font sizes based on output width (moderate scale)
-            const base = Math.max(outVW / 1200, 0.5);
-
-            const fsCompany = Math.round(18 * base);
-            const fsAddress = Math.round(13 * base);
-            const fsGPS     = Math.round(13 * base);
-            const fsTime    = Math.round(13 * base);
-            const fsCount   = Math.round(CONFIG.countFontSize * base);
-
-            const padX = Math.round(16 * base);
-            const padTop = Math.round(8 * base);
-            const lineGap = Math.round(4 * base);
-
-            const addressLinesUsed = wrapByCharBudget(
-                `📍 ${address}`,
-                CONFIG.addressCharsPerLine,
-                CONFIG.addressMaxLines
-            );
-
-            const logoRowHeight = logoReady ? Math.round(CONFIG.logoHeight * base * 0.7) : 0;
-
-            // ✅ Compact stamp height
-            const stampHeight = padTop
-                + fsCompany + lineGap
-                + (addressLinesUsed.length * (fsAddress + lineGap))
-                + fsGPS + lineGap
-                + fsTime + lineGap
-                + logoRowHeight
-                + Math.round(6 * base);
-
-            canvas.width = outVW;
-            canvas.height = outVH + stampHeight;
-
-            // Draw video frame (scaled)
-            ctx.drawImage(video, 0, 0, vw, vh, 0, 0, outVW, outVH);
-
-            // Stamp background
-            const stampY = outVH;
-            const gradient = ctx.createLinearGradient(0, stampY, 0, stampY + stampHeight);
+            // Stamp background (bottom strip)
+            const stampY = videoHeight;
+            const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
             gradient.addColorStop(0, 'rgba(10,10,25,0.94)');
             gradient.addColorStop(1, 'rgba(5,5,15,0.98)');
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, stampY, outVW, stampHeight);
+            ctx.fillRect(0, stampY, canvas.width, stampHeight);
 
-            // Top border line (accent)
-            ctx.strokeStyle = 'rgba(233,69,96,0.5)';
-            ctx.lineWidth = Math.max(1, 1.5 * base);
+            // Red accent border line
+            ctx.strokeStyle = 'rgba(233,69,96,0.85)';
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(0, stampY);
-            ctx.lineTo(outVW, stampY);
+            ctx.lineTo(canvas.width, stampY);
             ctx.stroke();
+
+            // Font sizes tuned for 1024px wide canvas
+            const padX = 18;
+            const padTop = 14;
+            const lineGap = 6;
+
+            const fsCompany = 22;
+            const fsAddress = 16;
+            const fsGPS = 16;
+            const fsTime = 16;
+            const fsCount = 40;
 
             let y = stampY + padTop;
 
-            // Company text (with accent left bar)
+            // Company name with red accent bar
             ctx.fillStyle = '#e94560';
-            ctx.fillRect(padX, y, Math.max(2, 3 * base), fsCompany);
+            ctx.fillRect(padX, y + 2, 4, fsCompany - 2);
 
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
             ctx.fillStyle = '#ffffff';
             ctx.shadowColor = 'rgba(0,0,0,0.6)';
-            ctx.shadowBlur = 2 * base;
-            ctx.shadowOffsetY = 1 * base;
-            ctx.fillText(`${CONFIG.companyName}`, padX + Math.max(6, 8 * base), y);
+            ctx.shadowBlur = 3;
+            ctx.shadowOffsetY = 1;
+            ctx.fillText(CONFIG.companyName, padX + 12, y);
             y += fsCompany + lineGap;
 
-            // Address
+            // Address (wrapped)
+            const addressLinesUsed = wrapByCharBudget(
+                `📍 ${address}`,
+                CONFIG.addressCharsPerLine,
+                CONFIG.addressMaxLines
+            );
             ctx.font = `${fsAddress}px 'Arial', 'Helvetica', sans-serif`;
             ctx.fillStyle = '#aac8ff';
-            ctx.shadowBlur = 2 * base;
+            ctx.shadowBlur = 2;
             for (const line of addressLinesUsed) {
                 ctx.fillText(line, padX, y);
                 y += fsAddress + lineGap;
             }
 
-            // GPS (medium size, clean)
+            // GPS
             ctx.font = `${fsGPS}px 'Courier New', monospace`;
             ctx.fillStyle = '#8bc34a';
-            ctx.shadowBlur = 2 * base;
+            ctx.shadowBlur = 2;
             ctx.fillText(`Lat ${latStr}   Long ${lngStr}`, padX, y);
             y += fsGPS + lineGap;
 
             // Time
             ctx.font = `${fsTime}px 'Courier New', monospace`;
             ctx.fillStyle = '#ffd54f';
-            ctx.shadowBlur = 2 * base;
+            ctx.shadowBlur = 2;
             ctx.fillText(`🕐 ${timestamp}  ${tzAbbr}`, padX, y);
 
-            // Serial (top-right, faded)
+            // Serial (top-right of stamp)
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
             ctx.fillStyle = 'rgba(255,215,0,0.35)';
             ctx.shadowBlur = 0;
-            ctx.fillText(countLabel, outVW - padX, stampY + padTop);
+            ctx.fillText(countLabel, canvas.width - padX, stampY + padTop);
 
             // Logo (bottom-right of stamp)
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
-
             if (logoReady && logoImage) {
-                const lw = Math.round(CONFIG.logoWidth * base * 0.9);
-                const lh = Math.round(CONFIG.logoHeight * base * 0.9);
-                const lx = outVW - padX - lw;
-                const ly = stampY + stampHeight - lh - Math.round(4 * base);
+                const lw = 140;
+                const lh = 44;
+                const lx = canvas.width - padX - lw;
+                const ly = canvas.height - lh - 12;
                 try {
                     ctx.drawImage(logoImage, lx, ly, lw, lh);
-                } catch (err) {
+                } catch (e) {
                     ctx.textAlign = 'right';
                     ctx.textBaseline = 'bottom';
-                    ctx.font = `${Math.round(11 * base)}px 'Courier New', monospace`;
-                    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-                    ctx.fillText('NSPIRA', outVW - padX, stampY + stampHeight - Math.round(4 * base));
+                    ctx.font = `14px 'Courier New', monospace`;
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 12);
                 }
             } else {
                 ctx.textAlign = 'right';
                 ctx.textBaseline = 'bottom';
-                ctx.font = `${Math.round(11 * base)}px 'Courier New', monospace`;
-                ctx.fillStyle = 'rgba(255,255,255,0.25)';
-                ctx.fillText('NSPIRA', outVW - padX, stampY + stampHeight - Math.round(4 * base));
+                ctx.font = `14px 'Courier New', monospace`;
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 12);
             }
 
             try {
@@ -812,8 +813,8 @@
                     previewImage.src = url;
                     previewWrapper.style.display = 'block';
                     downloadBtn.disabled = false;
-                    statusMsg.innerHTML = `<span class="ready">✅ Captured. Press Download to save.</span>`;
-                }, 'image/jpeg', 0.90);
+                    statusMsg.innerHTML = `<span class="ready">✅ Captured (4:3). Press Download.</span>`;
+                }, 'image/jpeg', 0.92);
             } catch (err) {
                 console.error('toBlob failed:', err);
                 statusMsg.innerHTML = `<span class="error">❌ Capture failed: ${err.message}</span>`;
@@ -825,7 +826,7 @@
         // ============================================================
         async function uploadToDatabase(blob, meta) {
             if (!CONFIG.dbUploadUrl) {
-                console.log('ℹ️ DB upload skipped (no endpoint configured). Payload ready:', meta);
+                console.log('ℹ️ DB upload skipped. Payload ready:', meta);
                 return { success: false, reason: 'no-endpoint' };
             }
             try {
@@ -845,7 +846,6 @@
                 const res = await fetch(CONFIG.dbUploadUrl, { method: 'POST', headers, body: form });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const json = await res.json().catch(() => ({}));
-                console.log('✅ DB upload success:', json);
                 return { success: true, response: json };
             } catch (err) {
                 console.error('❌ DB upload failed:', err);
@@ -883,7 +883,7 @@
                     setTimeout(() => URL.revokeObjectURL(link.href), 1500);
                     statusMsg.innerHTML = `<span class="ready">✅ Downloaded: ${filename}</span>`;
                 } catch (e) {
-                    statusMsg.innerHTML = `<span class="warn">⚠️ Download issue — using share fallback.</span>`;
+                    statusMsg.innerHTML = `<span class="warn">⚠️ Download issue — share fallback.</span>`;
                     showIOSOverlay(filename);
                 }
             }
@@ -898,9 +898,9 @@
             };
             uploadToDatabase(currentPhotoBlob, meta).then((result) => {
                 if (result.success) {
-                    statusMsg.innerHTML += `<br /><span class="ready">☁️ Uploaded to database.</span>`;
+                    statusMsg.innerHTML += `<br /><span class="ready">☁️ Uploaded.</span>`;
                 } else if (result.reason !== 'no-endpoint') {
-                    statusMsg.innerHTML += `<br /><span class="warn">⚠️ DB upload failed: ${result.reason}</span>`;
+                    statusMsg.innerHTML += `<br /><span class="warn">⚠️ DB upload failed.</span>`;
                 }
             });
 
@@ -910,6 +910,7 @@
                 previewImage.src = '';
                 currentPhotoBlob = null;
                 serialCommitted = false;
+                updateLiveOverlay();
             }, 1500);
         }
 
@@ -934,7 +935,7 @@
             const file = new File([currentPhotoBlob], filename, { type: 'image/jpeg' });
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
-                    await navigator.share({ files: [file], title: 'Nspira Photo', text: 'Nspira stamped photo' });
+                    await navigator.share({ files: [file], title: 'Nspira Photo' });
                     statusMsg.innerHTML = `<span class="ready">✅ Shared/saved.</span>`;
                 } catch (e) { console.warn('Share cancelled:', e); }
             } else {
@@ -943,23 +944,14 @@
         });
 
         // ============================================================
-        // RESET — backend only
+        // Reset
         // ============================================================
         async function resetSerial() {
             photoCount = 0;
             serialCommitted = false;
             localStorage.setItem(CONFIG.lsSerialKey, '0');
-
-            if (CONFIG.dbUploadUrl) {
-                try {
-                    await fetch(CONFIG.dbUploadUrl.replace(/\/photos\/?$/, '/reset'), {
-                        method: 'POST',
-                        headers: CONFIG.dbApiKey ? { Authorization: `Bearer ${CONFIG.dbApiKey}` } : {},
-                    });
-                } catch (e) { console.warn('DB reset failed:', e); }
-            }
-            statusMsg.innerHTML = `<span class="ready">✅ Serial reset. Next capture: NSP-1</span>`;
-            console.log('🔄 Serial reset to 0. Next serial: NSP-1');
+            updateLiveOverlay();
+            statusMsg.innerHTML = `<span class="ready">✅ Serial reset. Next: NSP-1</span>`;
         }
         window.nspiraReset = resetSerial;
 
@@ -978,31 +970,22 @@
         downloadBtn.addEventListener('click', downloadPhoto);
         switchBtn.addEventListener('click', switchCamera);
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); captureBtn.click(); }
-            if (e.key === 'd' || e.key === 'D') downloadBtn.click();
-            if (e.key === 's' || e.key === 'S') switchBtn.click();
-        });
-
         // ============================================================
         // Init
         // ============================================================
         async function init() {
             if (!window.isSecureContext) {
-                statusMsg.innerHTML = `<span class="error">❌ Camera requires HTTPS. Please open via https://</span>`;
+                statusMsg.innerHTML = `<span class="error">❌ Camera requires HTTPS.</span>`;
                 return;
             }
-
             await loadLogo();
-
             startGeolocation();
             await startCamera('environment');
+            updateLiveOverlay();
         }
         init();
 
         console.log('📸 Nspira Camera App loaded!');
-        console.log('ℹ️ iOS:', isIOS, '| Safari:', isSafari);
-        console.log('ℹ️ To reset serial from backend/console: window.nspiraReset()');
     </script>
 </body>
 </html>
