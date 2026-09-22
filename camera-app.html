@@ -17,35 +17,35 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 12px;
+            padding: 14px;
             -webkit-tap-highlight-color: transparent;
         }
 
         .container {
-            max-width: 480px;
+            max-width: 520px;
             width: 100%;
             background: #16213e;
-            border-radius: 16px;
-            padding: 14px;
+            border-radius: 20px;
+            padding: 18px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
         }
 
-        /* Compact header */
+        /* Header — medium size */
         .header {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1.5px solid #e94560;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e94560;
         }
         .header .nspira-logo {
-            width: 90px;
+            width: 120px;
             height: auto;
             display: block;
         }
         .header h1 {
-            font-size: 13px;
+            font-size: 16px;
             color: #e94560;
             font-weight: 700;
             letter-spacing: 0.2px;
@@ -56,11 +56,68 @@
             text-overflow: ellipsis;
         }
 
-        /* ✅ Camera wrapper — with overlay for address/GPS/time on the image */
+        /* ✅ Restored company info panel — medium size, balanced */
+        .info-div {
+            background: #0f0f23;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            border: 1px solid #2a2a4a;
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #ddd;
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: none;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .info-div .company-name {
+            color: #e94560;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            line-height: 1.3;
+            margin-bottom: 6px;
+        }
+        .info-div .company-name .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .info-div .company-name .icon img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            display: block;
+        }
+        .info-div .company-name .company-text {
+            display: inline;
+            line-height: 1.3;
+            word-break: break-word;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .info-div .gps-line { color: #4fc3f7; font-size: 13px; font-weight: 500; }
+        .info-div .gps-line .map-link { color: #4fc3f7; text-decoration: none; pointer-events: auto; cursor: pointer; }
+        .info-div .gps-line .map-link:hover { text-decoration: underline; }
+        .info-div .address-line { color: #aac8ff; font-size: 12.5px; margin-top: 4px; line-height: 1.55; }
+        .info-div .time-line { color: #ffd54f; font-size: 13.5px; font-weight: 600; margin-top: 4px; }
+        .info-div .divider { color: #444; margin: 0 4px; }
+        .info-div .icon { margin-right: 6px; }
+
+        /* Camera wrapper with live overlay */
         .video-wrapper {
             position: relative;
             background: #0f0f23;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
             width: 100%;
             aspect-ratio: 4 / 3;
@@ -77,47 +134,47 @@
             top: 0; left: 0;
         }
 
-        /* ✅ Live overlay showing what will be stamped on the photo */
+        /* Live stamp overlay — medium size */
         .live-stamp {
             position: absolute;
             left: 0;
             right: 0;
             bottom: 0;
             background: linear-gradient(180deg, rgba(10,10,25,0.75) 0%, rgba(5,5,15,0.95) 100%);
-            border-top: 2px solid rgba(233, 69, 96, 0.7);
-            padding: 8px 10px;
+            border-top: 2.5px solid rgba(233, 69, 96, 0.85);
+            padding: 10px 12px;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             pointer-events: none;
             z-index: 5;
-            max-height: 55%;
+            max-height: 58%;
             overflow: hidden;
         }
         .live-stamp .ls-company {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 12px;
+            gap: 8px;
+            font-size: 14px;
             font-weight: 700;
             color: #ffffff;
             letter-spacing: 0.2px;
-            line-height: 1.2;
-            margin-bottom: 3px;
+            line-height: 1.25;
+            margin-bottom: 4px;
         }
         .live-stamp .ls-company::before {
             content: '';
             display: inline-block;
-            width: 3px;
-            height: 13px;
+            width: 4px;
+            height: 16px;
             background: #e94560;
             border-radius: 2px;
             flex-shrink: 0;
         }
         .live-stamp .ls-address {
-            font-size: 10.5px;
+            font-size: 12px;
             color: #aac8ff;
-            line-height: 1.35;
-            margin-bottom: 3px;
+            line-height: 1.4;
+            margin-bottom: 4px;
             word-wrap: break-word;
             overflow-wrap: break-word;
             display: -webkit-box;
@@ -126,36 +183,35 @@
             overflow: hidden;
         }
         .live-stamp .ls-gps {
-            font-size: 10px;
+            font-size: 11.5px;
             color: #8bc34a;
             font-family: 'Courier New', monospace;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
         }
         .live-stamp .ls-time {
-            font-size: 10px;
+            font-size: 11.5px;
             color: #ffd54f;
             font-family: 'Courier New', monospace;
         }
         .live-stamp .ls-serial {
             position: absolute;
-            top: 6px;
-            right: 10px;
-            font-size: 16px;
+            top: 8px;
+            right: 12px;
+            font-size: 20px;
             font-weight: 900;
-            color: rgba(255, 215, 0, 0.35);
+            color: rgba(255, 215, 0, 0.4);
             font-family: 'Arial Black', Arial, sans-serif;
             letter-spacing: 0.5px;
         }
         .live-stamp .ls-logo {
             position: absolute;
-            bottom: 6px;
-            right: 10px;
-            width: 60px;
+            bottom: 8px;
+            right: 12px;
+            width: 80px;
             height: auto;
             opacity: 0.9;
         }
 
-        /* Flash */
         .flash {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: white; opacity: 0; pointer-events: none; transition: opacity 0.1s;
@@ -163,17 +219,17 @@
         }
         .flash.active { opacity: 0.8; }
 
-        /* Compact controls */
+        /* Medium buttons */
         .controls {
             display: flex;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 10px;
+            margin-top: 14px;
         }
         .controls button {
-            padding: 12px 8px;
+            padding: 14px 10px;
             border: none;
-            border-radius: 10px;
-            font-size: 13px;
+            border-radius: 12px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -189,21 +245,21 @@
         .btn-download:disabled { background: #444; color: #888; cursor: not-allowed; }
 
         .status-msg {
-            margin-top: 8px;
+            margin-top: 10px;
             text-align: center;
-            font-size: 11.5px;
+            font-size: 12.5px;
             color: #888;
-            padding: 6px;
+            padding: 8px;
             border-radius: 8px;
             background: #0f0f23;
-            min-height: 26px;
+            min-height: 30px;
         }
         .status-msg .ready { color: #4caf50; }
         .status-msg .error { color: #e94560; }
         .status-msg .warn { color: #ffb74d; }
 
         .preview-wrapper {
-            margin-top: 10px;
+            margin-top: 12px;
             display: none;
             border-radius: 12px;
             overflow: hidden;
@@ -227,8 +283,8 @@
         .ios-overlay.active { display: flex; }
         .ios-overlay img { max-width: 100%; max-height: 65vh; border-radius: 12px; border: 2px solid #e94560; }
         .ios-overlay .hint {
-            color: #fff; margin-top: 16px; font-size: 14px; text-align: center;
-            line-height: 1.5;
+            color: #fff; margin-top: 16px; font-size: 15px; text-align: center;
+            line-height: 1.6;
         }
         .ios-overlay .hint strong { color: #ffd54f; }
         .ios-overlay .close-btn {
@@ -245,32 +301,56 @@
         }
         .ios-overlay .btn-save { background: #4caf50; color: white; }
 
-        @media (max-width: 380px) {
-            .header h1 { font-size: 11px; }
-            .header .nspira-logo { width: 70px; }
-            .controls button { font-size: 11px; padding: 10px 4px; }
-            .live-stamp .ls-company { font-size: 11px; }
-            .live-stamp .ls-address { font-size: 9.5px; }
-            .live-stamp .ls-gps, .live-stamp .ls-time { font-size: 9px; }
-            .live-stamp .ls-serial { font-size: 13px; }
-            .live-stamp .ls-logo { width: 50px; }
+        @media (max-width: 400px) {
+            .container { padding: 12px; }
+            .header .nspira-logo { width: 95px; }
+            .header h1 { font-size: 13px; }
+            .info-div { font-size: 12px; padding: 12px; line-height: 1.6; }
+            .info-div .company-name { font-size: 13.5px; gap: 6px; }
+            .info-div .company-name .icon img { width: 26px; height: 26px; }
+            .controls button { font-size: 12px; padding: 12px 6px; }
+            .live-stamp .ls-company { font-size: 12.5px; }
+            .live-stamp .ls-address { font-size: 10.5px; }
+            .live-stamp .ls-gps, .live-stamp .ls-time { font-size: 10px; }
+            .live-stamp .ls-serial { font-size: 16px; }
+            .live-stamp .ls-logo { width: 65px; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Compact header -->
+        <!-- Header -->
         <div class="header">
             <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo" class="nspira-logo">
             <h1>Nspira Photo Stamping</h1>
+        </div>
+
+        <!-- ✅ Restored company / GPS / time panel (medium size) -->
+        <div class="info-div" id="infoDiv">
+            <div class="company-name">
+                <span class="icon">
+                    <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo">
+                </span>
+                <span class="company-text">Nspira Camera (By Electrical F&amp;A)</span>
+            </div>
+            <div class="gps-line" id="gpsLine">
+                <span class="icon">📍</span> GPS: <span id="gpsCoords">Waiting for GPS...</span>
+                <span class="divider"></span>
+                <a href="#" id="mapLink" class="map-link" target="_blank" rel="noopener"></a>
+            </div>
+            <div class="address-line" id="addressLine">
+                <span class="icon">🏠</span> <span id="fullAddress">Detecting address...</span>
+            </div>
+            <div class="time-line" id="timeLine">
+                <span class="icon">🕐</span> Date &amp; Time: <span id="dateTimeDisplay">--/--/---- --:--:-- --</span>
+            </div>
         </div>
 
         <!-- Camera with live stamp overlay -->
         <div class="video-wrapper" id="videoWrapper">
             <video id="video" autoplay playsinline muted></video>
 
-            <!-- ✅ Live overlay: exactly what will be printed on the saved image -->
             <div class="live-stamp" id="liveStamp">
                 <div class="ls-serial" id="lsSerial">NSP-1</div>
                 <div class="ls-company">Captured By Nspira Camera</div>
@@ -324,11 +404,10 @@
             dbApiKey: '',
             lsSerialKey: 'nspira_serial_count',
             logoDataUri: 'https://mynspira.in/assets/images/logo-light.png',
-            // ✅ FIX #1: Output canvas is exactly 4:3
-            outputWidth: 1024,      // 4:3 => 1024 x 768
+            // ✅ 4:3 output canvas
+            outputWidth: 1024,
             outputHeight: 768,
-            // Stamp takes the bottom portion of the 4:3 canvas
-            stampRatioOfHeight: 0.38,   // stamp = ~38% of total height
+            stampRatioOfHeight: 0.38,
         };
 
         // ============================================================
@@ -343,6 +422,11 @@
         const previewImage = document.getElementById('previewImage');
         const flash = document.getElementById('flash');
         const statusMsg = document.getElementById('statusMsg');
+
+        const gpsCoords = document.getElementById('gpsCoords');
+        const fullAddress = document.getElementById('fullAddress');
+        const dateTimeDisplay = document.getElementById('dateTimeDisplay');
+        const mapLink = document.getElementById('mapLink');
 
         const lsSerial = document.getElementById('lsSerial');
         const lsAddress = document.getElementById('lsAddress');
@@ -384,11 +468,9 @@
                 img.onload = () => {
                     logoImage = img;
                     logoReady = true;
-                    console.log('✅ Logo preloaded:', img.naturalWidth + 'x' + img.naturalHeight);
                     resolve(true);
                 };
                 img.onerror = () => {
-                    console.warn('⚠️ Logo failed to load — stamp will show text fallback.');
                     logoReady = false;
                     resolve(false);
                 };
@@ -437,16 +519,25 @@
         }
 
         // ============================================================
-        // ✅ FIX #2: Live overlay updates — mirrors what the image will show
+        // Update BOTH the info panel AND the live overlay
         // ============================================================
-        function updateLiveOverlay() {
+        function updateUI() {
             const now = new Date();
             const serial = getNextSerialNumber();
             lsSerial.textContent = `${CONFIG.countPrefix}${serial}`;
+            dateTimeDisplay.textContent = formatDateTime12hr(now);
 
             if (currentGPS.lat !== null && currentGPS.lng !== null) {
-                lsGps.textContent = `Lat ${currentGPS.lat.toFixed(6)}°   Long ${currentGPS.lng.toFixed(6)}°`;
+                const latStr = currentGPS.lat.toFixed(6);
+                const lngStr = currentGPS.lng.toFixed(6);
+                gpsCoords.textContent = `Lat ${latStr}° Long ${lngStr}°`;
+                mapLink.href = `https://www.google.com/maps?q=${currentGPS.lat},${currentGPS.lng}`;
+                fullAddress.textContent = currentGPS.address || 'Detecting address...';
+                lsGps.textContent = `Lat ${latStr}°   Long ${lngStr}°`;
             } else {
+                gpsCoords.textContent = 'Waiting for GPS...';
+                fullAddress.textContent = 'Detecting address...';
+                mapLink.href = '#';
                 lsGps.textContent = 'Lat --.------°   Long --.------°';
             }
 
@@ -459,8 +550,8 @@
             }
         }
 
-        setInterval(updateLiveOverlay, 1000);
-        updateLiveOverlay();
+        setInterval(updateUI, 1000);
+        updateUI();
 
         // ============================================================
         // Reverse geocoding — building / place name priority
@@ -474,23 +565,10 @@
             const parts = [];
 
             const specific = [
-                addr.building,
-                addr.amenity,
-                addr.institution,
-                addr.university,
-                addr.school,
-                addr.office,
-                addr.shop,
-                addr.hospital,
-                addr.clinic,
-                addr.hotel,
-                addr.restaurant,
-                addr.place_of_worship,
-                addr.tourism,
-                addr.leisure,
-                addr.industrial,
-                addr.commercial,
-                addr.retail,
+                addr.building, addr.amenity, addr.institution, addr.university,
+                addr.school, addr.office, addr.shop, addr.hospital, addr.clinic,
+                addr.hotel, addr.restaurant, addr.place_of_worship, addr.tourism,
+                addr.leisure, addr.industrial, addr.commercial, addr.retail,
             ];
 
             const generic = [
@@ -499,11 +577,8 @@
                 addr.neighbourhood || addr.suburb || addr.quarter,
                 addr.city_district || addr.district || addr.borough,
                 addr.city || addr.town || addr.village || addr.hamlet,
-                addr.county,
-                addr.state_district,
-                addr.state,
-                addr.postcode,
-                addr.country,
+                addr.county, addr.state_district, addr.state,
+                addr.postcode, addr.country,
             ];
 
             const push = (v) => {
@@ -540,10 +615,9 @@
                     currentGPS.address = 'Address unavailable in English';
                 }
             } catch (err) {
-                console.warn('Reverse geocoding error:', err);
                 currentGPS.address = 'Address lookup failed';
             }
-            updateLiveOverlay();
+            updateUI();
             return currentGPS.address;
         }
 
@@ -552,7 +626,8 @@
         // ============================================================
         function startGeolocation() {
             if (!navigator.geolocation) {
-                lsAddress.textContent = '📍 GPS not supported';
+                gpsCoords.textContent = '❌ GPS not available';
+                fullAddress.textContent = 'GPS not supported';
                 return;
             }
             navigator.geolocation.getCurrentPosition(
@@ -560,11 +635,12 @@
                     currentGPS.lat = pos.coords.latitude;
                     currentGPS.lng = pos.coords.longitude;
                     currentGPS.accuracy = pos.coords.accuracy;
-                    updateLiveOverlay();
+                    updateUI();
                     await getLocationName(currentGPS.lat, currentGPS.lng);
                 },
                 () => {
-                    lsAddress.textContent = '📍 Location unavailable';
+                    gpsCoords.textContent = '❌ GPS error';
+                    fullAddress.textContent = 'Location unavailable';
                 },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
             );
@@ -579,7 +655,7 @@
                     currentGPS.lat = pos.coords.latitude;
                     currentGPS.lng = pos.coords.longitude;
                     currentGPS.accuracy = pos.coords.accuracy;
-                    updateLiveOverlay();
+                    updateUI();
                     if (moved) {
                         await getLocationName(currentGPS.lat, currentGPS.lng);
                     }
@@ -605,7 +681,6 @@
                 statusMsg.innerHTML = `<span class="ready">✅ Camera ready (${faceMode === 'environment' ? 'Rear' : 'Front'})</span>`;
                 return true;
             } catch (err) {
-                console.error('Camera error:', err);
                 statusMsg.innerHTML = `<span class="error">❌ Camera error: ${err.message}</span>`;
                 return false;
             }
@@ -648,7 +723,7 @@
         }
 
         // ============================================================
-        // ✅ FIX #1: Capture at exact 4:3 (1024x768 total)
+        // Capture at exactly 4:3 (1024 × 768)
         // ============================================================
         async function capturePhoto() {
             if (!stream) { alert('Camera not ready.'); return; }
@@ -669,17 +744,15 @@
             const latStr = lat !== null ? `${lat.toFixed(6)}°` : '--.------°';
             const lngStr = lng !== null ? `${lng.toFixed(6)}°` : '--.------°';
 
-            // Final canvas = 4:3 (1024x768)
             const canvas = document.createElement('canvas');
-            canvas.width = CONFIG.outputWidth;   // 1024
-            canvas.height = CONFIG.outputHeight; // 768
+            canvas.width = CONFIG.outputWidth;
+            canvas.height = CONFIG.outputHeight;
             const ctx = canvas.getContext('2d');
 
-            // Stamp region occupies bottom portion of the 4:3 canvas
-            const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight); // ~292px
-            const videoHeight = canvas.height - stampHeight;                            // ~476px
+            const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight);
+            const videoHeight = canvas.height - stampHeight;
 
-            // Draw the video frame into the top region, cropping to fill
+            // Center-crop video into top region
             const vw = video.videoWidth || 1280;
             const vh = video.videoHeight || 720;
             const targetAR = canvas.width / videoHeight;
@@ -687,17 +760,15 @@
 
             let sx = 0, sy = 0, sWidth = vw, sHeight = vh;
             if (srcAR > targetAR) {
-                // Video is wider — crop sides
                 sWidth = Math.round(vh * targetAR);
                 sx = Math.round((vw - sWidth) / 2);
             } else {
-                // Video is taller — crop top/bottom
                 sHeight = Math.round(vw / targetAR);
                 sy = Math.round((vh - sHeight) / 2);
             }
             ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, videoHeight);
 
-            // Stamp background (bottom strip)
+            // Stamp background
             const stampY = videoHeight;
             const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
             gradient.addColorStop(0, 'rgba(10,10,25,0.94)');
@@ -705,7 +776,6 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, stampY, canvas.width, stampHeight);
 
-            // Red accent border line
             ctx.strokeStyle = 'rgba(233,69,96,0.85)';
             ctx.lineWidth = 3;
             ctx.beginPath();
@@ -713,7 +783,6 @@
             ctx.lineTo(canvas.width, stampY);
             ctx.stroke();
 
-            // Font sizes tuned for 1024px wide canvas
             const padX = 18;
             const padTop = 14;
             const lineGap = 6;
@@ -726,7 +795,7 @@
 
             let y = stampY + padTop;
 
-            // Company name with red accent bar
+            // Company name with red accent
             ctx.fillStyle = '#e94560';
             ctx.fillRect(padX, y + 2, 4, fsCompany - 2);
 
@@ -740,7 +809,7 @@
             ctx.fillText(CONFIG.companyName, padX + 12, y);
             y += fsCompany + lineGap;
 
-            // Address (wrapped)
+            // Address
             const addressLinesUsed = wrapByCharBudget(
                 `📍 ${address}`,
                 CONFIG.addressCharsPerLine,
@@ -767,7 +836,7 @@
             ctx.shadowBlur = 2;
             ctx.fillText(`🕐 ${timestamp}  ${tzAbbr}`, padX, y);
 
-            // Serial (top-right of stamp)
+            // Serial
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
@@ -775,7 +844,7 @@
             ctx.shadowBlur = 0;
             ctx.fillText(countLabel, canvas.width - padX, stampY + padTop);
 
-            // Logo (bottom-right of stamp)
+            // Logo
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
@@ -793,30 +862,21 @@
                     ctx.fillStyle = 'rgba(255,255,255,0.3)';
                     ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 12);
                 }
-            } else {
-                ctx.textAlign = 'right';
-                ctx.textBaseline = 'bottom';
-                ctx.font = `14px 'Courier New', monospace`;
-                ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 12);
             }
 
             try {
                 canvas.toBlob((blob) => {
                     if (!blob) {
-                        alert('Failed to capture image.');
                         statusMsg.innerHTML = `<span class="error">❌ Failed to capture image.</span>`;
                         return;
                     }
                     currentPhotoBlob = blob;
-                    const url = URL.createObjectURL(blob);
-                    previewImage.src = url;
+                    previewImage.src = URL.createObjectURL(blob);
                     previewWrapper.style.display = 'block';
                     downloadBtn.disabled = false;
                     statusMsg.innerHTML = `<span class="ready">✅ Captured (4:3). Press Download.</span>`;
                 }, 'image/jpeg', 0.92);
             } catch (err) {
-                console.error('toBlob failed:', err);
                 statusMsg.innerHTML = `<span class="error">❌ Capture failed: ${err.message}</span>`;
             }
         }
@@ -825,10 +885,7 @@
         // DB upload (provision)
         // ============================================================
         async function uploadToDatabase(blob, meta) {
-            if (!CONFIG.dbUploadUrl) {
-                console.log('ℹ️ DB upload skipped. Payload ready:', meta);
-                return { success: false, reason: 'no-endpoint' };
-            }
+            if (!CONFIG.dbUploadUrl) return { success: false, reason: 'no-endpoint' };
             try {
                 const form = new FormData();
                 form.append('photo', blob, meta.filename);
@@ -848,7 +905,6 @@
                 const json = await res.json().catch(() => ({}));
                 return { success: true, response: json };
             } catch (err) {
-                console.error('❌ DB upload failed:', err);
                 return { success: false, reason: err.message };
             }
         }
@@ -910,7 +966,7 @@
                 previewImage.src = '';
                 currentPhotoBlob = null;
                 serialCommitted = false;
-                updateLiveOverlay();
+                updateUI();
             }, 1500);
         }
 
@@ -918,8 +974,7 @@
         // iOS overlay
         // ============================================================
         function showIOSOverlay(filename) {
-            const url = URL.createObjectURL(currentPhotoBlob);
-            iosOverlayImg.src = url;
+            iosOverlayImg.src = URL.createObjectURL(currentPhotoBlob);
             iosOverlay.dataset.filename = filename;
             iosOverlay.classList.add('active');
         }
@@ -950,7 +1005,7 @@
             photoCount = 0;
             serialCommitted = false;
             localStorage.setItem(CONFIG.lsSerialKey, '0');
-            updateLiveOverlay();
+            updateUI();
             statusMsg.innerHTML = `<span class="ready">✅ Serial reset. Next: NSP-1</span>`;
         }
         window.nspiraReset = resetSerial;
@@ -981,7 +1036,7 @@
             await loadLogo();
             startGeolocation();
             await startCamera('environment');
-            updateLiveOverlay();
+            updateUI();
         }
         init();
 
