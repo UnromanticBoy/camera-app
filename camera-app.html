@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Nspira Camera - Photo Stamping</title>
     <style>
@@ -801,6 +802,25 @@ if (logoReady && logoImage) {
     ctx.fillStyle = 'rgba(255,255,255,0.65)';
     ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 10);
 }
+
+            // ✅ Convert the canvas to a JPEG blob
+            try {
+                canvas.toBlob((blob) => {
+                    if (!blob) {
+                        statusMsg.innerHTML = `<span class="error">❌ Failed to capture image.</span>`;
+                        return;
+                    }
+                    currentPhotoBlob = blob;
+                    previewImage.src = URL.createObjectURL(blob);
+                    previewWrapper.style.display = 'block';
+                    downloadBtn.disabled = false;
+                    statusMsg.innerHTML = `<span class="ready">✅ Captured (4:3). Press Download.</span>`;
+                }, 'image/jpeg', 0.92);
+            } catch (err) {
+                statusMsg.innerHTML = `<span class="error">❌ Capture failed: ${err.message}</span>`;
+            }
+        }   
+
         // ============================================================
         // DB upload
         // ============================================================
