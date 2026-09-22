@@ -44,9 +44,6 @@
             font-weight: 700;
             letter-spacing: 0.3px;
             text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .video-wrapper {
@@ -75,9 +72,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(180deg, rgba(15,15,35,0.55) 0%, rgba(10,10,25,0.80) 100%);
-            border-top: 2.5px solid rgba(233, 69, 96, 0.85);
-            padding: 12px 14px 14px;
+            background: linear-gradient(180deg, rgba(15,15,35,0.45) 0%, rgba(10,10,25,0.75) 100%);
+            border-top: 2.5px solid rgba(233, 69, 96, 0.9);
+            padding: 10px 14px 12px;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             pointer-events: none;
@@ -95,7 +92,7 @@
             line-height: 1.25;
             margin-bottom: 5px;
             padding-right: 80px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95);
         }
         .live-stamp .ls-company::before {
             content: '';
@@ -107,9 +104,9 @@
             flex-shrink: 0;
         }
         .live-stamp .ls-address {
-            font-size: 12.5px;
-            color: #aac8ff;
-            line-height: 1.45;
+            font-size: 12px;
+            color: #c9ddff;
+            line-height: 1.4;
             margin-bottom: 5px;
             word-wrap: break-word;
             overflow-wrap: break-word;
@@ -117,21 +114,21 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95);
         }
         .live-stamp .ls-gps {
-            font-size: 12px;
-            color: #8bc34a;
+            font-size: 11.5px;
+            color: #9ee06a;
             font-family: 'Courier New', monospace;
             margin-bottom: 4px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95);
         }
         .live-stamp .ls-time {
-            font-size: 12px;
-            color: #ffd54f;
+            font-size: 11.5px;
+            color: #ffe37a;
             font-family: 'Courier New', monospace;
-            padding-right: 90px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            padding-right: 100px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95);
         }
         .live-stamp .ls-serial {
             position: absolute;
@@ -139,19 +136,20 @@
             right: 14px;
             font-size: 22px;
             font-weight: 900;
-            color: rgba(255, 215, 0, 0.5);
+            color: rgba(255, 215, 0, 0.6);
             font-family: 'Arial Black', Arial, sans-serif;
             letter-spacing: 0.5px;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.95);
         }
         .live-stamp .ls-logo {
             position: absolute;
             bottom: 12px;
             right: 14px;
-            width: 78px;
+            width: 90px;
             height: auto;
-            opacity: 0.95;
+            opacity: 1;
             display: block;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.9));
         }
 
         .flash {
@@ -246,11 +244,11 @@
             .header h1 { font-size: 15px; }
             .controls button { font-size: 12px; padding: 12px 6px; }
             .live-stamp .ls-company { font-size: 13px; padding-right: 70px; }
-            .live-stamp .ls-address { font-size: 11px; }
-            .live-stamp .ls-gps, .live-stamp .ls-time { font-size: 10.5px; }
-            .live-stamp .ls-time { padding-right: 80px; }
+            .live-stamp .ls-address { font-size: 10.5px; }
+            .live-stamp .ls-gps, .live-stamp .ls-time { font-size: 10px; }
+            .live-stamp .ls-time { padding-right: 85px; }
             .live-stamp .ls-serial { font-size: 18px; }
-            .live-stamp .ls-logo { width: 65px; }
+            .live-stamp .ls-logo { width: 70px; }
         }
     </style>
 </head>
@@ -312,15 +310,15 @@
             companyName: 'Captured By Nspira Camera',
             countPrefix: 'NSP-',
             addressMaxLines: 3,
-            addressCharsPerLine: 42,
+            addressCharsPerLine: 55,   // ✅ wider so address wraps less
             dbUploadUrl: '',
             dbApiKey: '',
             lsSerialKey: 'nspira_serial_count',
             logoDataUri: 'https://mynspira.in/assets/images/logo-light.png',
             outputWidth: 1024,
             outputHeight: 768,
-            // ✅ Stamp occupies ~40% of total 4:3 height; content will be top-aligned
-            stampRatioOfHeight: 0.40,
+            // ✅ Compact stamp: 30% of total 4:3 height
+            stampRatioOfHeight: 0.30,
         };
 
         // ============================================================
@@ -453,7 +451,7 @@
         updateUI();
 
         // ============================================================
-        // Reverse geocoding — building / place name priority
+        // Reverse geocoding
         // ============================================================
         function isEnglishText(str) {
             if (!str) return false;
@@ -614,13 +612,13 @@
                 }
                 if (trimmed !== tail) trimmed = trimmed.replace(/,?\s*$/, '') + '…';
                 head.push(trimmed);
-                return lines.length > maxLines ? head : lines;
+                return head;
             }
             return lines;
         }
 
         // ============================================================
-        // ✅ Capture with proper sizing and visible logo
+        // ✅ Capture — compact stamp, visible logo, lighter bg
         // ============================================================
         async function capturePhoto() {
             if (!stream) { alert('Camera not ready.'); return; }
@@ -646,11 +644,11 @@
             canvas.height = CONFIG.outputHeight; // 768
             const ctx = canvas.getContext('2d');
 
-            // Stamp height fixed at 40% of total 4:3 height
-            const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight); // ~307px
-            const videoHeight = canvas.height - stampHeight;                            // ~461px
+            // ✅ Compact stamp: 30% of 4:3 height
+            const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight); // ~230px
+            const videoHeight = canvas.height - stampHeight;                            // ~538px
 
-            // Draw video with center-crop to fill the top region
+            // Video (center-crop fill)
             const vw = video.videoWidth || 1280;
             const vh = video.videoHeight || 720;
             const targetAR = canvas.width / videoHeight;
@@ -666,36 +664,35 @@
             }
             ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, videoHeight);
 
-            // ✅ Lighter stamp background — image partially visible behind
+            // ✅ Lighter stamp background — image visible behind
             const stampY = videoHeight;
             const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
-            gradient.addColorStop(0, 'rgba(10,10,30,0.62)');
-            gradient.addColorStop(1, 'rgba(5,5,20,0.85)');
+            gradient.addColorStop(0, 'rgba(15,15,35,0.55)');
+            gradient.addColorStop(1, 'rgba(10,10,25,0.78)');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, stampY, canvas.width, stampHeight);
 
-            // Red accent top border
-            ctx.strokeStyle = 'rgba(233,69,96,0.9)';
+            // Red accent line
+            ctx.strokeStyle = 'rgba(233,69,96,0.95)';
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(0, stampY);
             ctx.lineTo(canvas.width, stampY);
             ctx.stroke();
 
-            // Layout: compact, content top-aligned inside stamp
-            const padX = 20;
-            const padTop = 16;
-            const lineGap = 6;
+            const padX = 18;
+            const padTop = 10;
+            const lineGap = 4;
 
-            const fsCompany = 22;
-            const fsAddress = 16;
-            const fsGPS = 16;
-            const fsTime = 16;
-            const fsCount = 40;
+            const fsCompany = 20;
+            const fsAddress = 15;
+            const fsGPS = 15;
+            const fsTime = 15;
+            const fsCount = 34;
 
             let y = stampY + padTop;
 
-            // Red accent bar for company
+            // Red accent bar
             ctx.fillStyle = '#e94560';
             ctx.fillRect(padX, y + 2, 4, fsCompany - 2);
 
@@ -704,13 +701,13 @@
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
             ctx.fillStyle = '#ffffff';
-            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowColor = 'rgba(0,0,0,0.9)';
             ctx.shadowBlur = 4;
             ctx.shadowOffsetY = 1;
             ctx.fillText(CONFIG.companyName, padX + 12, y);
             y += fsCompany + lineGap;
 
-            // Address
+            // Address — wraps to 2-3 lines
             const addressLinesUsed = wrapByCharBudget(
                 `📍 ${address}`,
                 CONFIG.addressCharsPerLine,
@@ -737,25 +734,25 @@
             ctx.shadowBlur = 3;
             ctx.fillText(`🕐 ${timestamp}  ${tzAbbr}`, padX, y);
 
-            // Serial number (top-right)
+            // Serial (top-right)
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
-            ctx.fillStyle = 'rgba(255,215,0,0.55)';
-            ctx.shadowColor = 'rgba(0,0,0,0.7)';
+            ctx.fillStyle = 'rgba(255,215,0,0.6)';
+            ctx.shadowColor = 'rgba(0,0,0,0.9)';
             ctx.shadowBlur = 4;
             ctx.fillText(countLabel, canvas.width - padX, stampY + padTop);
 
-            // ✅ Reset shadow for logo
+            // Reset shadow for logo
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
 
-            // ✅ Draw logo at bottom-right of the stamp
-            const logoLw = 150;
-            const logoLh = 48;
+            // ✅ Logo — bottom-right, clearly visible
+            const logoLw = 140;
+            const logoLh = 42;
             const logoLx = canvas.width - padX - logoLw;
-            const logoLy = canvas.height - logoLh - 14;
+            const logoLy = canvas.height - logoLh - 10;
 
             let logoDrawn = false;
             if (logoReady && logoImage) {
@@ -766,14 +763,12 @@
                     console.warn('Logo draw failed:', err);
                 }
             }
-
-            // Fallback text watermark if the image failed
             if (!logoDrawn) {
                 ctx.textAlign = 'right';
                 ctx.textBaseline = 'bottom';
-                ctx.font = `bold 20px 'Arial Black', Arial, sans-serif`;
-                ctx.fillStyle = 'rgba(255,255,255,0.35)';
-                ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 14);
+                ctx.font = `bold 18px 'Arial Black', Arial, sans-serif`;
+                ctx.fillStyle = 'rgba(255,255,255,0.55)';
+                ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 12);
             }
 
             try {
@@ -794,7 +789,7 @@
         }
 
         // ============================================================
-        // DB upload (provision)
+        // DB upload
         // ============================================================
         async function uploadToDatabase(blob, meta) {
             if (!CONFIG.dbUploadUrl) return { success: false, reason: 'no-endpoint' };
