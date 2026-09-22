@@ -258,7 +258,7 @@
 
     <div class="container">
         <div class="header">
-            <h1>Nspira Photo Stamping(By Electrical     F&A)</h1>
+            <h1>Nspira Photo Stamping(By Electrical F&A new)</h1>
         </div>
 
         <div class="video-wrapper" id="videoWrapper">
@@ -694,23 +694,20 @@
 
             // Inside capturePhoto(), AFTER `ctx.drawImage(video, ...)`:
 
-// ✅ Stamp background — TRANSPARENT (photo fully visible behind text)
-// Only a very faint dark tint so text stays readable; comment this out
-// entirely if you want zero tint.
+// ✅ Transparent stamp — no background rectangle at all
 const stampY = videoHeight;
-const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
-gradient.addColorStop(0, 'rgba(0,0,0,0.10)');   // 10% — almost invisible
-gradient.addColorStop(1, 'rgba(0,0,0,0.25)');   // 25% — subtle
-ctx.fillStyle = gradient;
-ctx.fillRect(0, stampY, canvas.width, stampHeight);
-// ✅ Red accent line — matches CSS border-top
-ctx.strokeStyle = 'rgba(233,69,96,0.95)';
+
+// Red accent line (keep this, it's part of the design)
+ctx.strokeStyle = 'rgba(233,69,96,1)';
 ctx.lineWidth = 2.5;
 ctx.beginPath();
 ctx.moveTo(0, stampY);
 ctx.lineTo(canvas.width, stampY);
 ctx.stroke();
 
+// ... rest of the text drawing code ...
+// Every fillText() line will already have a strong text shadow
+// (shadowColor 'rgba(0,0,0,0.95)', shadowBlur 5) which keeps it readable.
 // ✅ Layout — matches CSS padding (10px top, 4% left/right)
 const padX = Math.round(canvas.width * 0.04);
 const padTop = 10;
