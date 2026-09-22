@@ -323,8 +323,8 @@
         const CONFIG = {
             companyName: 'Captured By Nspira Camera',
             countPrefix: 'NSP-',
-            addressMaxLines: 2,          // ✅ allow up to 4 lines (natural wrapping)
-            addressCharsPerLine: 20,     // ✅ natural width, doesn't shrink text
+            addressMaxLines: 3,          // ✅ allow up to 4 lines (natural wrapping)
+            addressCharsPerLine: 70,     // ✅ natural width, doesn't shrink text
             dbUploadUrl: '',
             dbApiKey: '',
             lsSerialKey: 'nspira_serial_count',
@@ -697,8 +697,8 @@
 // ✅ LIGHTER stamp background — photo clearly visible
 const stampY = videoHeight;
 const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
-gradient.addColorStop(0, 'rgba(10,10,25,0.15)');   // very light at top
-gradient.addColorStop(1, 'rgba(10,10,25,0.15)');   // slightly darker at bottom
+gradient.addColorStop(0, 'rgba(15,15,35,0.18)');   // very light at top
+gradient.addColorStop(1, 'rgba(10,10,25,0.42)');   // slightly darker at bottom
 ctx.fillStyle = gradient;
 ctx.fillRect(0, stampY, canvas.width, stampHeight);
 
