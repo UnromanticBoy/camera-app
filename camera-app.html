@@ -39,7 +39,6 @@
 
         .header h1 { font-size: 18px; color: #e94560; font-weight: 700; }
 
-        /* ✅ FIX #1: Company name row — now uses flexible wrapping and avoids overflow */
         .info-div {
             background: #0f0f23;
             border-radius: 12px;
@@ -63,7 +62,7 @@
             letter-spacing: 0.3px;
             display: flex;
             align-items: center;
-            flex-wrap: wrap;        /* ✅ allow wrapping instead of nowrap */
+            flex-wrap: wrap;
             gap: 8px;
             line-height: 1.3;
             margin-bottom: 4px;
@@ -84,7 +83,7 @@
         .info-div .company-name .company-text {
             display: inline;
             line-height: 1.3;
-            word-break: break-word;  /* ✅ prevent overflow */
+            word-break: break-word;
             flex: 1 1 auto;
             min-width: 0;
         }
@@ -236,7 +235,6 @@
         </div>
 
         <div class="info-div" id="infoDiv">
-            <!-- ✅ FIX #1: flexible wrapping, no overflow, no overlap -->
             <div class="company-name">
                 <span class="icon">
                     <img src="https://mynspira.in/assets/images/logo-light.png" alt="Nspira Logo">
@@ -298,18 +296,20 @@
             companyName: 'Captured By Nspira Camera',
             countPrefix: 'NSP-',
             timeFormat: '12hr',
-            countFontSize: 32,
-            addressMaxLines: 4,
-            addressCharsPerLine: 55,
+            countFontSize: 28,
+            addressMaxLines: 3,
+            addressCharsPerLine: 45,
             dbUploadUrl: '',
             dbApiKey: '',
             lsSerialKey: 'nspira_serial_count',
             logoDataUri: 'https://mynspira.in/assets/images/logo-light.png',
-            logoWidth: 140,
-            logoHeight: 48,
-            // ✅ FIX #3: Resize captured image to a normal, shareable size.
-            // This is the maximum width of the final saved image (video + stamp).
-            maxImageWidth: 1280,
+            logoWidth: 110,
+            logoHeight: 36,
+            // ✅ FIX #3: Cap the image size so it's not lengthy
+            maxImageWidth: 1000,
+            maxVideoHeight: 750,
+            // ✅ FIX #3: Compact stamp height
+            stampPadding: 10,
         };
 
         // ============================================================
@@ -439,8 +439,7 @@
         updateInfoDiv();
 
         // ============================================================
-        // ✅ FIX #2: Enhanced Reverse Geocoding — prioritize building,
-        //    amenity, institution, and POI names over generic area.
+        // ✅ FIX #2: Enhanced reverse geocoding with building priority
         // ============================================================
         function isEnglishText(str) {
             if (!str) return false;
@@ -450,8 +449,7 @@
         function buildFullAddress(addr, displayName) {
             const parts = [];
 
-            // ✅ Priority order: specific building/amenity/institution first,
-            //    then road, suburb, city, state, etc.
+            // Priority: specific building/amenity/POI names first
             const specific = [
                 addr.building,
                 addr.amenity,
@@ -469,6 +467,7 @@
                 addr.leisure,
                 addr.industrial,
                 addr.commercial,
+                addr.retail,
             ];
 
             const generic = [
@@ -487,16 +486,13 @@
             const push = (v) => {
                 if (v && typeof v === 'string' && v.trim() && isEnglishText(v)) {
                     const clean = v.trim();
-                    // avoid duplicates
                     if (!parts.some(p => p.toLowerCase() === clean.toLowerCase())) {
                         parts.push(clean);
                     }
                 }
             };
 
-            // First add all specific POI/building names
             specific.forEach(push);
-            // Then add generic address components
             generic.forEach(push);
 
             let result = parts.filter(Boolean).join(', ');
@@ -508,8 +504,8 @@
 
         async function getLocationName(lat, lng) {
             try {
-                // ✅ Request more detail (zoom=19) and include all address parts
-                const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=19&addressdetails=1&accept-language=en&extratags=1`;
+                // ✅ zoom=18 gives building/street level detail
+                const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=en&extratags=1`;
                 const response = await fetch(url, {
                     headers: { 'Accept': 'application/json', 'Accept-Language': 'en' }
                 });
@@ -644,8 +640,7 @@
         }
 
         // ============================================================
-        // ✅ FIX #3: Capture photo — resized to a normal, compact size,
-        //    with medium GPS text and balanced stamp height.
+        // ✅ FIX #3: Compact, professional capture
         // ============================================================
         async function capturePhoto() {
             if (!stream) { alert('Camera not ready.'); return; }
@@ -672,25 +667,26 @@
             const vw = video.videoWidth || 1280;
             const vh = video.videoHeight || 720;
 
-            // ✅ FIX #3: Resize the final image so it's not overly large.
-            // We scale everything down proportionally to fit within maxImageWidth.
-            const scale = Math.min(1, CONFIG.maxImageWidth / vw);
-            const outVW = Math.round(vw * scale);
-            const outVH = Math.round(vh * scale);
+            // ✅ FIX #3: Scale down video so total image is normal size
+            const videoScale = Math.min(
+                CONFIG.maxImageWidth / vw,
+                CONFIG.maxVideoHeight / vh
+            );
+            const outVW = Math.round(vw * videoScale);
+            const outVH = Math.round(vh * videoScale);
 
-            // Base font scale relative to the *output* width, but use a moderate base.
-            const base = Math.max(outVW / 1000, 0.55);
+            // Font sizes based on output width (moderate scale)
+            const base = Math.max(outVW / 1200, 0.5);
 
-            // ✅ FIX #3: Medium-sized GPS text (was too small), balanced stamp.
             const fsCompany = Math.round(18 * base);
-            const fsAddress = Math.round(14 * base);
-            const fsGPS     = Math.round(15 * base);   // ✅ medium size, was 14
-            const fsTime    = Math.round(15 * base);
+            const fsAddress = Math.round(13 * base);
+            const fsGPS     = Math.round(13 * base);
+            const fsTime    = Math.round(13 * base);
             const fsCount   = Math.round(CONFIG.countFontSize * base);
 
-            const padX = Math.round(18 * base);
-            const padTop = Math.round(10 * base);
-            const lineGap = Math.round(5 * base);
+            const padX = Math.round(16 * base);
+            const padTop = Math.round(8 * base);
+            const lineGap = Math.round(4 * base);
 
             const addressLinesUsed = wrapByCharBudget(
                 `📍 ${address}`,
@@ -698,16 +694,16 @@
                 CONFIG.addressMaxLines
             );
 
-            const logoRowHeight = logoReady ? Math.round(CONFIG.logoHeight * base * 0.8) : 0;
+            const logoRowHeight = logoReady ? Math.round(CONFIG.logoHeight * base * 0.7) : 0;
 
-            // ✅ FIX #3: Compact stamp height
+            // ✅ Compact stamp height
             const stampHeight = padTop
                 + fsCompany + lineGap
                 + (addressLinesUsed.length * (fsAddress + lineGap))
                 + fsGPS + lineGap
                 + fsTime + lineGap
                 + logoRowHeight
-                + Math.round(8 * base);
+                + Math.round(6 * base);
 
             canvas.width = outVW;
             canvas.height = outVH + stampHeight;
@@ -715,32 +711,36 @@
             // Draw video frame (scaled)
             ctx.drawImage(video, 0, 0, vw, vh, 0, 0, outVW, outVH);
 
-            // Stamp bg
+            // Stamp background
             const stampY = outVH;
             const gradient = ctx.createLinearGradient(0, stampY, 0, stampY + stampHeight);
-            gradient.addColorStop(0, 'rgba(0,0,0,0.90)');
-            gradient.addColorStop(1, 'rgba(10,10,30,0.97)');
+            gradient.addColorStop(0, 'rgba(10,10,25,0.94)');
+            gradient.addColorStop(1, 'rgba(5,5,15,0.98)');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, stampY, outVW, stampHeight);
 
-            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            // Top border line (accent)
+            ctx.strokeStyle = 'rgba(233,69,96,0.5)';
             ctx.lineWidth = Math.max(1, 1.5 * base);
             ctx.beginPath();
-            ctx.moveTo(padX, stampY);
-            ctx.lineTo(outVW - padX, stampY);
+            ctx.moveTo(0, stampY);
+            ctx.lineTo(outVW, stampY);
             ctx.stroke();
 
             let y = stampY + padTop;
 
-            // Company text
+            // Company text (with accent left bar)
+            ctx.fillStyle = '#e94560';
+            ctx.fillRect(padX, y, Math.max(2, 3 * base), fsCompany);
+
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
-            ctx.fillStyle = '#e94560';
-            ctx.shadowColor = 'rgba(0,0,0,0.5)';
-            ctx.shadowBlur = 3 * base;
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowColor = 'rgba(0,0,0,0.6)';
+            ctx.shadowBlur = 2 * base;
             ctx.shadowOffsetY = 1 * base;
-            ctx.fillText(`${CONFIG.companyName}`, padX, y);
+            ctx.fillText(`${CONFIG.companyName}`, padX + Math.max(6, 8 * base), y);
             y += fsCompany + lineGap;
 
             // Address
@@ -752,7 +752,7 @@
                 y += fsAddress + lineGap;
             }
 
-            // GPS (medium size)
+            // GPS (medium size, clean)
             ctx.font = `${fsGPS}px 'Courier New', monospace`;
             ctx.fillStyle = '#8bc34a';
             ctx.shadowBlur = 2 * base;
@@ -769,11 +769,11 @@
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
-            ctx.fillStyle = 'rgba(255,215,0,0.32)';
+            ctx.fillStyle = 'rgba(255,215,0,0.35)';
             ctx.shadowBlur = 0;
             ctx.fillText(countLabel, outVW - padX, stampY + padTop);
 
-            // Draw the preloaded logo
+            // Logo (bottom-right of stamp)
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
@@ -782,26 +782,24 @@
                 const lw = Math.round(CONFIG.logoWidth * base * 0.9);
                 const lh = Math.round(CONFIG.logoHeight * base * 0.9);
                 const lx = outVW - padX - lw;
-                const ly = stampY + stampHeight - lh - Math.round(6 * base);
+                const ly = stampY + stampHeight - lh - Math.round(4 * base);
                 try {
                     ctx.drawImage(logoImage, lx, ly, lw, lh);
                 } catch (err) {
-                    console.warn('drawImage(logo) failed, using text watermark:', err);
                     ctx.textAlign = 'right';
                     ctx.textBaseline = 'bottom';
-                    ctx.font = `${Math.round(12 * base)}px 'Courier New', monospace`;
-                    ctx.fillStyle = 'rgba(255,255,255,0.22)';
-                    ctx.fillText('NSPIRA', outVW - padX, stampY + stampHeight - Math.round(6 * base));
+                    ctx.font = `${Math.round(11 * base)}px 'Courier New', monospace`;
+                    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                    ctx.fillText('NSPIRA', outVW - padX, stampY + stampHeight - Math.round(4 * base));
                 }
             } else {
                 ctx.textAlign = 'right';
                 ctx.textBaseline = 'bottom';
-                ctx.font = `${Math.round(12 * base)}px 'Courier New', monospace`;
-                ctx.fillStyle = 'rgba(255,255,255,0.22)';
-                ctx.fillText('NSPIRA', outVW - padX, stampY + stampHeight - Math.round(6 * base));
+                ctx.font = `${Math.round(11 * base)}px 'Courier New', monospace`;
+                ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                ctx.fillText('NSPIRA', outVW - padX, stampY + stampHeight - Math.round(4 * base));
             }
 
-            // Convert to blob
             try {
                 canvas.toBlob((blob) => {
                     if (!blob) {
