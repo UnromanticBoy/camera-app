@@ -49,14 +49,13 @@
             text-overflow: ellipsis;
         }
 
-        /* ✅ FIX #2: Camera is now TALLER (3:4) for a roomier preview */
         .video-wrapper {
             position: relative;
             background: #0f0f23;
             border-radius: 14px;
             overflow: hidden;
             width: 100%;
-            aspect-ratio: 3 / 4;   /* taller preview */
+            aspect-ratio: 3 / 4;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -70,13 +69,13 @@
             top: 0; left: 0;
         }
 
-        /* Live stamp overlay — medium size */
+        /* ✅ Lighter overlay background */
         .live-stamp {
             position: absolute;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(180deg, rgba(10,10,25,0.78) 0%, rgba(5,5,15,0.96) 100%);
+            background: linear-gradient(180deg, rgba(15,15,35,0.55) 0%, rgba(10,10,25,0.80) 100%);
             border-top: 2.5px solid rgba(233, 69, 96, 0.85);
             padding: 12px 14px 14px;
             color: #fff;
@@ -95,7 +94,8 @@
             letter-spacing: 0.2px;
             line-height: 1.25;
             margin-bottom: 5px;
-            padding-right: 80px; /* leave room for serial */
+            padding-right: 80px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
         }
         .live-stamp .ls-company::before {
             content: '';
@@ -117,18 +117,21 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
         }
         .live-stamp .ls-gps {
             font-size: 12px;
             color: #8bc34a;
             font-family: 'Courier New', monospace;
             margin-bottom: 4px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
         }
         .live-stamp .ls-time {
             font-size: 12px;
             color: #ffd54f;
             font-family: 'Courier New', monospace;
-            padding-right: 90px; /* leave room for logo */
+            padding-right: 90px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
         }
         .live-stamp .ls-serial {
             position: absolute;
@@ -136,11 +139,11 @@
             right: 14px;
             font-size: 22px;
             font-weight: 900;
-            color: rgba(255, 215, 0, 0.42);
+            color: rgba(255, 215, 0, 0.5);
             font-family: 'Arial Black', Arial, sans-serif;
             letter-spacing: 0.5px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9);
         }
-        /* ✅ FIX #1: Company logo inside the live overlay */
         .live-stamp .ls-logo {
             position: absolute;
             bottom: 12px;
@@ -267,7 +270,6 @@
                 <div class="ls-address" id="lsAddress">📍 Detecting address...</div>
                 <div class="ls-gps" id="lsGps">Lat --.------°   Long --.------°</div>
                 <div class="ls-time" id="lsTime">🕐 --/--/---- --:--:-- --</div>
-                <!-- ✅ FIX #1: Logo shown inside the live overlay -->
                 <img class="ls-logo" id="lsLogo" src="https://mynspira.in/assets/images/logo-light.png" alt="NSPIRA logo">
             </div>
 
@@ -317,7 +319,8 @@
             logoDataUri: 'https://mynspira.in/assets/images/logo-light.png',
             outputWidth: 1024,
             outputHeight: 768,
-            stampRatioOfHeight: 0.38,
+            // ✅ Stamp occupies ~40% of total 4:3 height; content will be top-aligned
+            stampRatioOfHeight: 0.40,
         };
 
         // ============================================================
@@ -611,13 +614,13 @@
                 }
                 if (trimmed !== tail) trimmed = trimmed.replace(/,?\s*$/, '') + '…';
                 head.push(trimmed);
-                return head;
+                return lines.length > maxLines ? head : lines;
             }
             return lines;
         }
 
         // ============================================================
-        // Capture at exactly 4:3 (1024 × 768)
+        // ✅ Capture with proper sizing and visible logo
         // ============================================================
         async function capturePhoto() {
             if (!stream) { alert('Camera not ready.'); return; }
@@ -639,13 +642,15 @@
             const lngStr = lng !== null ? `${lng.toFixed(6)}°` : '--.------°';
 
             const canvas = document.createElement('canvas');
-            canvas.width = CONFIG.outputWidth;
-            canvas.height = CONFIG.outputHeight;
+            canvas.width = CONFIG.outputWidth;   // 1024
+            canvas.height = CONFIG.outputHeight; // 768
             const ctx = canvas.getContext('2d');
 
-            const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight);
-            const videoHeight = canvas.height - stampHeight;
+            // Stamp height fixed at 40% of total 4:3 height
+            const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight); // ~307px
+            const videoHeight = canvas.height - stampHeight;                            // ~461px
 
+            // Draw video with center-crop to fill the top region
             const vw = video.videoWidth || 1280;
             const vh = video.videoHeight || 720;
             const targetAR = canvas.width / videoHeight;
@@ -661,22 +666,25 @@
             }
             ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, videoHeight);
 
+            // ✅ Lighter stamp background — image partially visible behind
             const stampY = videoHeight;
             const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
-            gradient.addColorStop(0, 'rgba(10,10,25,0.94)');
-            gradient.addColorStop(1, 'rgba(5,5,15,0.98)');
+            gradient.addColorStop(0, 'rgba(10,10,30,0.62)');
+            gradient.addColorStop(1, 'rgba(5,5,20,0.85)');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, stampY, canvas.width, stampHeight);
 
-            ctx.strokeStyle = 'rgba(233,69,96,0.85)';
+            // Red accent top border
+            ctx.strokeStyle = 'rgba(233,69,96,0.9)';
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(0, stampY);
             ctx.lineTo(canvas.width, stampY);
             ctx.stroke();
 
-            const padX = 18;
-            const padTop = 14;
+            // Layout: compact, content top-aligned inside stamp
+            const padX = 20;
+            const padTop = 16;
             const lineGap = 6;
 
             const fsCompany = 22;
@@ -687,67 +695,85 @@
 
             let y = stampY + padTop;
 
+            // Red accent bar for company
             ctx.fillStyle = '#e94560';
             ctx.fillRect(padX, y + 2, 4, fsCompany - 2);
 
+            // Company name
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
             ctx.fillStyle = '#ffffff';
-            ctx.shadowColor = 'rgba(0,0,0,0.6)';
-            ctx.shadowBlur = 3;
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur = 4;
             ctx.shadowOffsetY = 1;
             ctx.fillText(CONFIG.companyName, padX + 12, y);
             y += fsCompany + lineGap;
 
+            // Address
             const addressLinesUsed = wrapByCharBudget(
                 `📍 ${address}`,
                 CONFIG.addressCharsPerLine,
                 CONFIG.addressMaxLines
             );
             ctx.font = `${fsAddress}px 'Arial', 'Helvetica', sans-serif`;
-            ctx.fillStyle = '#aac8ff';
-            ctx.shadowBlur = 2;
+            ctx.fillStyle = '#c9ddff';
+            ctx.shadowBlur = 3;
             for (const line of addressLinesUsed) {
                 ctx.fillText(line, padX, y);
                 y += fsAddress + lineGap;
             }
 
+            // GPS
             ctx.font = `${fsGPS}px 'Courier New', monospace`;
-            ctx.fillStyle = '#8bc34a';
-            ctx.shadowBlur = 2;
+            ctx.fillStyle = '#9ee06a';
+            ctx.shadowBlur = 3;
             ctx.fillText(`Lat ${latStr}   Long ${lngStr}`, padX, y);
             y += fsGPS + lineGap;
 
+            // Time
             ctx.font = `${fsTime}px 'Courier New', monospace`;
-            ctx.fillStyle = '#ffd54f';
-            ctx.shadowBlur = 2;
+            ctx.fillStyle = '#ffe37a';
+            ctx.shadowBlur = 3;
             ctx.fillText(`🕐 ${timestamp}  ${tzAbbr}`, padX, y);
 
+            // Serial number (top-right)
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
-            ctx.fillStyle = 'rgba(255,215,0,0.35)';
-            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(255,215,0,0.55)';
+            ctx.shadowColor = 'rgba(0,0,0,0.7)';
+            ctx.shadowBlur = 4;
             ctx.fillText(countLabel, canvas.width - padX, stampY + padTop);
 
+            // ✅ Reset shadow for logo
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
+
+            // ✅ Draw logo at bottom-right of the stamp
+            const logoLw = 150;
+            const logoLh = 48;
+            const logoLx = canvas.width - padX - logoLw;
+            const logoLy = canvas.height - logoLh - 14;
+
+            let logoDrawn = false;
             if (logoReady && logoImage) {
-                const lw = 140;
-                const lh = 44;
-                const lx = canvas.width - padX - lw;
-                const ly = canvas.height - lh - 12;
                 try {
-                    ctx.drawImage(logoImage, lx, ly, lw, lh);
-                } catch (e) {
-                    ctx.textAlign = 'right';
-                    ctx.textBaseline = 'bottom';
-                    ctx.font = `14px 'Courier New', monospace`;
-                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                    ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 12);
+                    ctx.drawImage(logoImage, logoLx, logoLy, logoLw, logoLh);
+                    logoDrawn = true;
+                } catch (err) {
+                    console.warn('Logo draw failed:', err);
                 }
+            }
+
+            // Fallback text watermark if the image failed
+            if (!logoDrawn) {
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'bottom';
+                ctx.font = `bold 20px 'Arial Black', Arial, sans-serif`;
+                ctx.fillStyle = 'rgba(255,255,255,0.35)';
+                ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 14);
             }
 
             try {
