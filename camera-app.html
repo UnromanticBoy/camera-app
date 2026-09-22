@@ -67,113 +67,90 @@
             top: 0; left: 0;
         }
 
-        /* ============================================================
-           LIVE STAMP — mirrors the canvas exactly.
-           All values below are duplicated in JS as STAMP.* constants.
-           ============================================================ */
+        /* ✅ Lighter overlay so the photo behind is visible */
         .live-stamp {
             position: absolute;
             left: 0;
             right: 0;
             bottom: 0;
-            /* matches canvas gradient */
-            background: linear-gradient(
-                180deg,
-                rgba(15, 15, 35, 0.55) 0%,
-                rgba(10, 10, 25, 0.78) 100%
-            );
-            /* matches canvas top border */
-            border-top: 2.5px solid rgba(233, 69, 96, 1);
-            /* matches canvas padding (~4% of width and 12px top) */
-            padding: 12px 4% 14px;
+            background: linear-gradient(180deg, rgba(20,20,40,0.35) 0%, rgba(10,10,25,0.62) 100%);
+            border-top: 2.5px solid rgba(233, 69, 96, 0.95);
+            padding: 10px 14px 14px;
             color: #fff;
-            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             pointer-events: none;
             z-index: 5;
             overflow: hidden;
         }
-
-        /* Company line — matches canvas: 22px bold #fff + 5px red bar */
         .live-stamp .ls-company {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 22px;
+            font-size: 15px;
             font-weight: 700;
             color: #ffffff;
-            letter-spacing: 0.5px;
-            line-height: 1.2;
-            margin-bottom: 4px;
-            padding-right: 100px;
-            text-shadow: 0 1px 5px rgba(0,0,0,0.95);
+            letter-spacing: 0.2px;
+            line-height: 1.25;
+            margin-bottom: 5px;
+            padding-right: 80px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95);
         }
         .live-stamp .ls-company::before {
             content: '';
             display: inline-block;
-            width: 5px;
-            height: 17px;   /* fsCompany - 5 */
+            width: 4px;
+            height: 18px;
             background: #e94560;
             border-radius: 2px;
             flex-shrink: 0;
         }
-
-        /* Address — matches canvas: 16px #dbe9ff */
         .live-stamp .ls-address {
-            font-size: 16px;
-            color: #dbe9ff;
-            line-height: 1.35;
-            margin-bottom: 4px;
+            font-size: 12px;
+            color: #c9ddff;
+            line-height: 1.4;
+            margin-bottom: 5px;
             word-wrap: break-word;
             overflow-wrap: break-word;
             display: -webkit-box;
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.95);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95);
         }
-
-        /* GPS — matches canvas: 16px 'Courier New' #b6e86a */
         .live-stamp .ls-gps {
-            font-size: 16px;
-            color: #b6e86a;
+            font-size: 11.5px;
+            color: #9ee06a;
             font-family: 'Courier New', monospace;
             margin-bottom: 4px;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.95);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95);
         }
-
-        /* Time — matches canvas: 16px 'Courier New' #ffe37a */
         .live-stamp .ls-time {
-            font-size: 16px;
+            font-size: 11.5px;
             color: #ffe37a;
             font-family: 'Courier New', monospace;
-            padding-right: 160px;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.95);
+            padding-right: 100px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95);
         }
-
-        /* Serial — matches canvas: 40px Arial Black rgba(255,215,0,0.70) */
         .live-stamp .ls-serial {
             position: absolute;
-            top: 12px;
-            right: 4%;
-            font-size: 40px;
+            top: 10px;
+            right: 14px;
+            font-size: 22px;
             font-weight: 900;
-            color: rgba(255, 215, 0, 0.70);
+            color: rgba(255, 215, 0, 0.65);
             font-family: 'Arial Black', Arial, sans-serif;
             letter-spacing: 0.5px;
-            text-shadow: 0 1px 5px rgba(0,0,0,0.95);
-            line-height: 1;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.95);
         }
-
-        /* Logo — matches canvas: 150x42 at bottom-right */
         .live-stamp .ls-logo {
             position: absolute;
-            bottom: 10px;
-            right: 4%;
-            width: 150px;
-            height: 42px;
-            object-fit: contain;
+            bottom: 12px;
+            right: 14px;
+            width: 90px;
+            height: auto;
             opacity: 1;
             display: block;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.9));
         }
 
         .flash {
@@ -268,12 +245,12 @@
             .container { padding: 12px; }
             .header h1 { font-size: 15px; }
             .controls button { font-size: 12px; padding: 12px 6px; }
-            .live-stamp .ls-company { font-size: 16px; padding-right: 70px; }
-            .live-stamp .ls-address { font-size: 12px; }
-            .live-stamp .ls-gps, .live-stamp .ls-time { font-size: 12px; }
-            .live-stamp .ls-time { padding-right: 110px; }
-            .live-stamp .ls-serial { font-size: 28px; }
-            .live-stamp .ls-logo { width: 100px; height: 28px; }
+            .live-stamp .ls-company { font-size: 13px; padding-right: 70px; }
+            .live-stamp .ls-address { font-size: 10.5px; }
+            .live-stamp .ls-gps, .live-stamp .ls-time { font-size: 10px; }
+            .live-stamp .ls-time { padding-right: 85px; }
+            .live-stamp .ls-serial { font-size: 18px; }
+            .live-stamp .ls-logo { width: 70px; }
         }
     </style>
 </head>
@@ -281,7 +258,7 @@
 
     <div class="container">
         <div class="header">
-            <h1>Nspira Photo Stamping</h1>
+            <h1>Nspira Photo Stamping(By Electrical     F&A)</h1>
         </div>
 
         <div class="video-wrapper" id="videoWrapper">
@@ -293,7 +270,7 @@
                 <div class="ls-address" id="lsAddress">📍 Detecting address...</div>
                 <div class="ls-gps" id="lsGps">Lat --.------°   Long --.------°</div>
                 <div class="ls-time" id="lsTime">🕐 --/--/---- --:--:-- --</div>
-                <img class="ls-logo" id="lsLogo" alt="NSPIRA logo">
+                <img class="ls-logo" id="lsLogo" src="https://mynspira.in/assets/images/logo-light.png" alt="NSPIRA logo">
             </div>
 
             <div class="flash" id="flash"></div>
@@ -329,72 +306,34 @@
 
     <script>
         // ============================================================
-        // LOGO — replace the base64 below with your own logo's base64.
+        // ✅ LOGO — Replace with YOUR real logo as base64 data URI.
+        //
+        // How to get a base64 data URI for your PNG logo:
+        //   1. Visit https://base64.guru/converter/encode/image
+        //   2. Upload your nspira logo PNG
+        //   3. Copy the "data:image/png;base64,..." output
+        //   4. Paste it below, replacing the placeholder string.
+        //
+        // Below is a temporary inline SVG data URI so the demo works
+        // without CORS issues. Replace it with your real logo!
         // ============================================================
-        const LOGO_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAABOCAMAAACt6NuiAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAwBQTFRFAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Bz0LCAAAAQB0Uk5TAAEDBxg2UGJ3ho6Ri35qVTweCQYLfKXG5+3z+v7/8tu+jVImEg8cLUSDq87j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';
-
-        // ============================================================
-        // ✅ SINGLE SOURCE OF TRUTH — Stamp style
-        // Change a value here and BOTH the UI and the canvas update.
-        // (UI colors are also hardcoded in the CSS above so the live
-        //  preview matches before JS runs.)
-        // ============================================================
-        const STAMP = {
-            // canvas size
-            outWidth: 1024,
-            outHeight: 768,
-            stampRatioOfHeight: 0.28,
-
-            // colors
-            bgTop:    'rgba(15,15,35,0.55)',
-            bgBottom: 'rgba(10,10,25,0.78)',
-            accentBar: '#e94560',
-            accentTopLine: 'rgba(233,69,96,1)',
-            companyColor: '#ffffff',
-            addressColor: '#dbe9ff',
-            gpsColor: '#b6e86a',
-            timeColor: '#ffe37a',
-            serialColor: 'rgba(255,215,0,0.70)',
-
-            // fonts / sizes (canvas)
-            fsCompany: 22,
-            fsAddress: 16,
-            fsGPS: 16,
-            fsTime: 16,
-            fsCount: 40,
-
-            // layout (canvas)
-            padXPct: 0.04,   // 4% of canvas width
-            padTop: 12,
-            lineGap: 4,
-            barWidth: 5,
-            barOffsetX: 14,
-
-            // text shadow (canvas)
-            shadowColor: 'rgba(0,0,0,0.95)',
-            shadowBlur: 5,
-            shadowOffsetY: 1,
-
-            // logo (canvas)
-            logoW: 150,
-            logoH: 42,
-            logoMarginBottom: 10,
-
-            // address wrap
-            addressCharsPerLine: 48,
-            addressMaxLines: 4,
-        };
-
-        // ============================================================
-        // CONFIGURATION (non-stamp)
+        const LOGO_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAABOCAMAAACt6NuiAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAwBQTFRFAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Bz0LCAAAAQB0Uk5TAAEDBxg2UGJ3ho6Ri35qVTweCQYLfKXG5+3z+v7/8tu+jVImEg8cLUSDq87j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';        // ============================================================
+        // CONFIGURATION
         // ============================================================
         const CONFIG = {
             companyName: 'Captured By Nspira Camera',
             countPrefix: 'NSP-',
+            addressMaxLines: 4,          // ✅ allow up to 4 lines (natural wrapping)
+            addressCharsPerLine: 48,     // ✅ natural width, doesn't shrink text
             dbUploadUrl: '',
             dbApiKey: '',
             lsSerialKey: 'nspira_serial_count',
+            // ✅ Use embedded logo — no CORS, always draws
             logoDataUri: LOGO_DATA_URI,
+            outputWidth: 1024,
+            outputHeight: 768,
+            // ✅ Stamp: 28% of 4:3 canvas (photo gets 72% — matches reference)
+            stampRatioOfHeight: 0.28,
         };
 
         // ============================================================
@@ -414,6 +353,8 @@
         const lsAddress = document.getElementById('lsAddress');
         const lsGps = document.getElementById('lsGps');
         const lsTime = document.getElementById('lsTime');
+
+        // ✅ Update the live preview logo to the embedded one too
         const lsLogo = document.getElementById('lsLogo');
         if (lsLogo) lsLogo.src = LOGO_DATA_URI;
 
@@ -442,11 +383,12 @@
         const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
         // ============================================================
-        // Logo loader
+        // Logo loader — now uses embedded data URI, always loads
         // ============================================================
         function loadLogo() {
             return new Promise((resolve) => {
                 const img = new Image();
+                // No crossOrigin needed for data URIs
                 img.onload = () => {
                     logoImage = img;
                     logoReady = true;
@@ -475,7 +417,7 @@
         }
 
         // ============================================================
-        // Date / time helpers
+        // Format date/time
         // ============================================================
         function formatDateTime12hr(now) {
             const d = now || new Date();
@@ -503,7 +445,7 @@
         }
 
         // ============================================================
-        // Update live UI (mirrors what canvas will produce)
+        // Update live overlay + enable/disable Capture
         // ============================================================
         function updateUI() {
             const now = new Date();
@@ -544,12 +486,14 @@
 
         function buildFullAddress(addr, displayName) {
             const parts = [];
+
             const specific = [
                 addr.building, addr.amenity, addr.institution, addr.university,
                 addr.school, addr.office, addr.shop, addr.hospital, addr.clinic,
                 addr.hotel, addr.restaurant, addr.place_of_worship, addr.tourism,
                 addr.leisure, addr.industrial, addr.commercial, addr.retail,
             ];
+
             const generic = [
                 addr.house_number,
                 addr.road || addr.street || addr.pedestrian || addr.footway || addr.path,
@@ -559,6 +503,7 @@
                 addr.county, addr.state_district, addr.state,
                 addr.postcode, addr.country,
             ];
+
             const push = (v) => {
                 if (v && typeof v === 'string' && v.trim() && isEnglishText(v)) {
                     const clean = v.trim();
@@ -567,8 +512,10 @@
                     }
                 }
             };
+
             specific.forEach(push);
             generic.forEach(push);
+
             let result = parts.filter(Boolean).join(', ');
             if (result.length < 20 && displayName && isEnglishText(displayName)) {
                 result = displayName;
@@ -614,7 +561,9 @@
                     updateUI();
                     await getLocationName(currentGPS.lat, currentGPS.lng);
                 },
-                () => { lsAddress.textContent = '📍 Location unavailable'; },
+                () => {
+                    lsAddress.textContent = '📍 Location unavailable';
+                },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
             );
 
@@ -630,7 +579,9 @@
                     currentGPS.accuracy = pos.coords.accuracy;
                     if (!gpsReady) gpsReady = true;
                     updateUI();
-                    if (moved) await getLocationName(currentGPS.lat, currentGPS.lng);
+                    if (moved) {
+                        await getLocationName(currentGPS.lat, currentGPS.lng);
+                    }
                 },
                 () => {},
                 { enableHighAccuracy: true, maximumAge: 10000 }
@@ -659,12 +610,13 @@
         }
 
         // ============================================================
-        // Address wrapping
+        // Word-safe wrapping
         // ============================================================
         function wrapByCharBudget(text, charsPerLine, maxLines) {
             const words = String(text).split(/\s+/).filter(Boolean);
             const lines = [];
             let current = '';
+
             for (const word of words) {
                 const candidate = current ? current + ' ' + word : word;
                 if (candidate.length <= charsPerLine) {
@@ -675,6 +627,7 @@
                 }
             }
             if (current) lines.push(current);
+
             if (lines.length > maxLines) {
                 const head = lines.slice(0, maxLines - 1);
                 const tail = lines.slice(maxLines - 1).join(' ');
@@ -716,14 +669,14 @@
             const lngStr = lng !== null ? `${lng.toFixed(6)}°` : '--.------°';
 
             const canvas = document.createElement('canvas');
-            canvas.width = STAMP.outWidth;
-            canvas.height = STAMP.outHeight;
+            canvas.width = CONFIG.outputWidth;
+            canvas.height = CONFIG.outputHeight;
             const ctx = canvas.getContext('2d');
 
-            const stampHeight = Math.round(canvas.height * STAMP.stampRatioOfHeight);
+            const stampHeight = Math.round(canvas.height * CONFIG.stampRatioOfHeight);
             const videoHeight = canvas.height - stampHeight;
 
-            // Draw video (center-crop)
+            // Video (center-crop fill)
             const vw = video.videoWidth || 1280;
             const vh = video.videoHeight || 720;
             const targetAR = canvas.width / videoHeight;
@@ -739,112 +692,118 @@
             }
             ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, videoHeight);
 
-            // Stamp background
-            const stampY = videoHeight;
-            const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
-            gradient.addColorStop(0, STAMP.bgTop);
-            gradient.addColorStop(1, STAMP.bgBottom);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, stampY, canvas.width, stampHeight);
+            // Inside capturePhoto(), AFTER `ctx.drawImage(video, ...)`:
 
-            // Accent line
-            ctx.strokeStyle = STAMP.accentTopLine;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(0, stampY);
-            ctx.lineTo(canvas.width, stampY);
-            ctx.stroke();
+// ✅ LIGHTER stamp background — photo clearly visible
+const stampY = videoHeight;
+const gradient = ctx.createLinearGradient(0, stampY, 0, canvas.height);
+gradient.addColorStop(0, 'rgba(15,15,35,0.18)');   // very light at top
+gradient.addColorStop(1, 'rgba(10,10,25,0.42)');   // slightly darker at bottom
+ctx.fillStyle = gradient;
+ctx.fillRect(0, stampY, canvas.width, stampHeight);
 
-            // Layout
-            const padX = Math.round(canvas.width * STAMP.padXPct);
-            const padTop = STAMP.padTop;
-            const lineGap = STAMP.lineGap;
-            const fsCompany = STAMP.fsCompany;
-            const fsAddress = STAMP.fsAddress;
-            const fsGPS = STAMP.fsGPS;
-            const fsTime = STAMP.fsTime;
-            const fsCount = STAMP.fsCount;
+// Red accent line on top
+ctx.strokeStyle = 'rgba(233,69,96,1)';
+ctx.lineWidth = 3;
+ctx.beginPath();
+ctx.moveTo(0, stampY);
+ctx.lineTo(canvas.width, stampY);
+ctx.stroke();
 
-            let y = stampY + padTop;
+// ✅ Layout — padX is now ~4% of width (matches the reference)
+const padX = Math.round(canvas.width * 0.04);       // ~41px on 1024
+const padTop = 12;
+const lineGap = 4;
 
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
+const fsCompany = 22;
+const fsAddress = 16;
+const fsGPS = 16;
+const fsTime = 16;
+const fsCount = 40;
 
-            // Company
-            ctx.fillStyle = STAMP.accentBar;
-            ctx.fillRect(padX, y + 3, STAMP.barWidth, fsCompany - 5);
+let y = stampY + padTop;
 
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'top';
-            ctx.shadowColor = STAMP.shadowColor;
-            ctx.shadowBlur = STAMP.shadowBlur;
-            ctx.shadowOffsetY = STAMP.shadowOffsetY;
-            ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
-            ctx.fillStyle = STAMP.companyColor;
-            ctx.fillText(CONFIG.companyName, padX + STAMP.barOffsetX, y);
-            y += fsCompany + lineGap;
+// Reset shadow state first
+ctx.shadowBlur = 0;
+ctx.shadowOffsetX = 0;
+ctx.shadowOffsetY = 0;
 
-            // Address
-            ctx.font = `${fsAddress}px 'Arial', 'Helvetica', sans-serif`;
-            ctx.fillStyle = STAMP.addressColor;
-            ctx.shadowBlur = 4;
-            const addressLinesUsed = wrapByCharBudget(
-                `📍 ${address}`,
-                STAMP.addressCharsPerLine,
-                STAMP.addressMaxLines
-            );
-            for (const line of addressLinesUsed) {
-                ctx.fillText(line, padX, y);
-                y += fsAddress + lineGap;
-            }
+// --- Company line ---
+ctx.fillStyle = '#e94560';
+ctx.fillRect(padX, y + 3, 5, fsCompany - 5);
 
-            // GPS
-            ctx.font = `${fsGPS}px 'Courier New', monospace`;
-            ctx.fillStyle = STAMP.gpsColor;
-            ctx.shadowBlur = 4;
-            ctx.fillText(`Lat ${latStr}   Long ${lngStr}`, padX, y);
-            y += fsGPS + lineGap;
+ctx.textAlign = 'left';
+ctx.textBaseline = 'top';
+ctx.shadowColor = 'rgba(0,0,0,0.95)';
+ctx.shadowBlur = 5;
+ctx.shadowOffsetY = 1;
+ctx.font = `bold ${fsCompany}px 'Arial', 'Helvetica', sans-serif`;
+ctx.fillStyle = '#ffffff';
+ctx.fillText(CONFIG.companyName, padX + 14, y);
+y += fsCompany + lineGap;
 
-            // Time
-            ctx.font = `${fsTime}px 'Courier New', monospace`;
-            ctx.fillStyle = STAMP.timeColor;
-            ctx.shadowBlur = 4;
-            ctx.fillText(`🕐 ${timestamp}  ${tzAbbr}`, padX, y);
+// --- Address ---
+ctx.font = `${fsAddress}px 'Arial', 'Helvetica', sans-serif`;
+ctx.fillStyle = '#dbe9ff';
+ctx.shadowBlur = 4;
+const addressLinesUsed = wrapByCharBudget(
+    `📍 ${address}`,
+    CONFIG.addressCharsPerLine,
+    CONFIG.addressMaxLines
+);
+for (const line of addressLinesUsed) {
+    ctx.fillText(line, padX, y);
+    y += fsAddress + lineGap;
+}
 
-            // Serial
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'top';
-            ctx.shadowBlur = 5;
-            ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
-            ctx.fillStyle = STAMP.serialColor;
-            ctx.fillText(countLabel, canvas.width - padX, stampY + padTop);
+// --- GPS ---
+ctx.font = `${fsGPS}px 'Courier New', monospace`;
+ctx.fillStyle = '#b6e86a';
+ctx.shadowBlur = 4;
+ctx.fillText(`Lat ${latStr}   Long ${lngStr}`, padX, y);
+y += fsGPS + lineGap;
 
-            // Logo
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'bottom';
+// --- Time ---
+ctx.font = `${fsTime}px 'Courier New', monospace`;
+ctx.fillStyle = '#ffe37a';
+ctx.shadowBlur = 4;
+ctx.fillText(`🕐 ${timestamp}  ${tzAbbr}`, padX, y);
 
-            const logoLw = STAMP.logoW;
-            const logoLh = STAMP.logoH;
-            const logoLx = canvas.width - padX - logoLw;
-            const logoLy = canvas.height - logoLh - STAMP.logoMarginBottom;
+// --- Serial (top right) ---
+ctx.textAlign = 'right';
+ctx.textBaseline = 'top';
+ctx.shadowBlur = 5;
+ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
+ctx.fillStyle = 'rgba(255,215,0,0.70)';
+ctx.fillText(countLabel, canvas.width - padX, stampY + padTop);
 
-            if (logoReady && logoImage) {
-                try {
-                    ctx.drawImage(logoImage, logoLx, logoLy, logoLw, logoLh);
-                } catch (err) {
-                    console.error('❌ Logo draw failed:', err);
-                }
-            } else {
-                ctx.font = `bold 20px 'Arial Black', Arial, sans-serif`;
-                ctx.fillStyle = 'rgba(255,255,255,0.65)';
-                ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 10);
-            }
+// --- Logo (bottom right) ---
+ctx.shadowBlur = 0;
+ctx.shadowOffsetX = 0;
+ctx.shadowOffsetY = 0;
+ctx.textAlign = 'right';
+ctx.textBaseline = 'bottom';
 
-            // Blob
+const logoLw = 150;
+const logoLh = 42;
+const logoLx = canvas.width - padX - logoLw;
+const logoLy = canvas.height - logoLh - 10;
+
+if (logoReady && logoImage) {
+    try {
+        ctx.drawImage(logoImage, logoLx, logoLy, logoLw, logoLh);
+        console.log('✅ Logo drawn');
+    } catch (err) {
+        console.error('❌ Logo draw failed:', err);
+    }
+} else {
+    console.warn('⚠️ Logo NOT ready — drawing text fallback');
+    ctx.font = `bold 20px 'Arial Black', Arial, sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.fillText('NSPIRA', canvas.width - padX, canvas.height - 10);
+}
+
+            // ✅ Convert the canvas to a JPEG blob
             try {
                 canvas.toBlob((blob) => {
                     if (!blob) {
@@ -860,7 +819,7 @@
             } catch (err) {
                 statusMsg.innerHTML = `<span class="error">❌ Capture failed: ${err.message}</span>`;
             }
-        }
+        }   
 
         // ============================================================
         // DB upload
@@ -877,8 +836,10 @@
                 form.append('longitude', meta.lng !== null ? String(meta.lng) : '');
                 form.append('address', meta.address);
                 form.append('device', navigator.userAgent);
+
                 const headers = {};
                 if (CONFIG.dbApiKey) headers['Authorization'] = `Bearer ${CONFIG.dbApiKey}`;
+
                 const res = await fetch(CONFIG.dbUploadUrl, { method: 'POST', headers, body: form });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const json = await res.json().catch(() => ({}));
@@ -893,6 +854,7 @@
         // ============================================================
         async function downloadPhoto() {
             if (!currentPhotoBlob) return;
+
             const now = new Date();
             const ts = now.getFullYear() +
                 String(now.getMonth() + 1).padStart(2, '0') +
