@@ -247,6 +247,7 @@
             .live-stamp .ls-logo { width: 70px; }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -311,16 +312,26 @@
         // without CORS issues. Replace it with your real logo!
         // ============================================================
         const LOGO_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAABOCAMAAACt6NuiAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAwBQTFRFAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Bz0LCAAAAQB0Uk5TAAEDBxg2UGJ3ho6Ri35qVTweCQYLfKXG5+3z+v7/8tu+jVImEg8cLUSDq87j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';        // ============================================================
+        // SUPABASE CONFIGURATION
+        // ============================================================
+        // The publishable key is safe for browser/client code.
+        // NEVER put a Supabase secret/service-role key in this file.
+        const SUPABASE_URL = 'https://zgowfgfuaglpmoigfktx.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_fz31GlOgQRS9nhiCjN0XnA_0g4K7H_S';
+        const supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+        // ============================================================
         // CONFIGURATION
         // ============================================================
         const CONFIG = {
             companyName: '📸 Captured By Nspira Camera',
             countPrefix: 'NSP-',
-            addressMaxLines: 3,          // Up to 4 lines for a fuller address
-            addressCharsPerLine: 72,     // Better fit for building/institution names
-            dbUploadUrl: '',
-            dbApiKey: '',
-            lsSerialKey: 'nspira_serial_count',
+            addressMaxLines: 3,          // Up to 3 lines for a fuller address
+            addressCharsPerLine: 70,     // Better fit for building/institution names
+            storageBucket: 'photo-stamping',
             // ✅ Use embedded logo — no CORS, always draws
             logoDataUri: LOGO_DATA_URI,
             outputWidth: 960,
@@ -360,10 +371,12 @@
         // ============================================================
         let stream = null;
         let facingMode = 'environment';
-        let photoCount = parseInt(localStorage.getItem(CONFIG.lsSerialKey) || '0', 10);
+        let supabaseReady = false;
         let currentPhotoBlob = null;
         let currentPhotoSerial = 0;
-        let serialCommitted = false;
+        let currentBatchId = '';
+        let currentPhotoMeta = null;
+        let captureInProgress = false;
         let currentGPS = { lat: null, lng: null, accuracy: null, address: 'Detecting address...' };
         let watchId = null;
         let gpsReady = false;
@@ -397,15 +410,67 @@
         }
 
         // ============================================================
-        // Serial helpers
+        // Supabase authentication + central serial control
         // ============================================================
-        function getNextSerialNumber() { return photoCount + 1; }
+        async function initSupabase() {
+            try {
+                const { data: sessionData, error: sessionError } =
+                    await supabaseClient.auth.getSession();
 
-        function commitSerial() {
-            if (serialCommitted) return;
-            photoCount++;
-            localStorage.setItem(CONFIG.lsSerialKey, String(photoCount));
-            serialCommitted = true;
+                if (sessionError) throw sessionError;
+
+                if (sessionData.session) {
+                    supabaseReady = true;
+                    return true;
+                }
+
+                const { data, error } = await supabaseClient.auth.signInAnonymously();
+                if (error) throw error;
+
+                supabaseReady = !!data.session;
+                return supabaseReady;
+            } catch (err) {
+                console.error('Supabase authentication failed:', err);
+                supabaseReady = false;
+                statusMsg.innerHTML = `<span class="error">❌ Secure backend connection failed. Please refresh.</span>`;
+                return false;
+            }
+        }
+
+        // Read the next central number WITHOUT changing it.
+        // The number is committed only after the image has uploaded successfully.
+        async function peekNextSerial() {
+            if (!supabaseReady) throw new Error('Secure backend is not ready.');
+
+            const { data, error } = await supabaseClient.rpc('peek_next_serial');
+            if (error) throw error;
+
+            const row = Array.isArray(data) ? data[0] : data;
+            if (!row || !Number.isInteger(Number(row.serial_number)) || !row.batch_id) {
+                throw new Error('Invalid serial response from Supabase.');
+            }
+
+            return {
+                serial: Number(row.serial_number),
+                batchId: String(row.batch_id)
+            };
+        }
+
+        // Commit the serial and photo database record atomically in PostgreSQL.
+        async function commitPhotoRecord(meta) {
+            const { data, error } = await supabaseClient.rpc('commit_photo', {
+                p_serial_number: meta.serial,
+                p_batch_id: meta.batchId,
+                p_file_name: meta.filename,
+                p_date_time: meta.timestamp,
+                p_latitude: meta.lat,
+                p_longitude: meta.lng,
+                p_address: meta.address,
+                p_storage_path: meta.storagePath
+            });
+
+            if (error) throw error;
+            return data;
         }
 
         // ============================================================
@@ -459,7 +524,7 @@
                                  currentGPS.address !== 'Detecting address...' &&
                                  currentGPS.address !== 'Address lookup failed' &&
                                  currentGPS.address !== 'Address unavailable in English';
-            captureBtn.disabled = !(gpsReady && addressReady);
+            captureBtn.disabled = !(supabaseReady && gpsReady && addressReady) || captureInProgress;
         }
 
         setInterval(updateUI, 1000);
@@ -736,19 +801,89 @@
         // ============================================================
         // Camera
         // ============================================================
+        async function waitForVideoReady(timeoutMs = 5000) {
+            if (video.readyState >= 3 && video.videoWidth > 0 && video.videoHeight > 0) return true;
+
+            return await new Promise((resolve) => {
+                let finished = false;
+                const done = (ok) => {
+                    if (finished) return;
+                    finished = true;
+                    clearTimeout(timer);
+                    video.removeEventListener('loadedmetadata', onReady);
+                    video.removeEventListener('canplay', onReady);
+                    resolve(ok);
+                };
+                const onReady = () => {
+                    if (video.videoWidth > 0 && video.videoHeight > 0) done(true);
+                };
+                const timer = setTimeout(() => done(false), timeoutMs);
+                video.addEventListener('loadedmetadata', onReady);
+                video.addEventListener('canplay', onReady);
+            });
+        }
+
+        // ============================================================
+        // Camera
+        // ============================================================
         async function startCamera(faceMode) {
             try {
-                if (stream) stream.getTracks().forEach(t => t.stop());
+                // Fully release the previous camera before requesting another one.
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                if (video.srcObject) {
+                    video.pause();
+                    video.srcObject = null;
+                }
+
+                // Small delay prevents Chrome from racing the old camera track.
+                await new Promise(resolve => setTimeout(resolve, 250));
+
                 const constraints = {
-                    video: { facingMode: faceMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
-                    audio: false,
+                    video: {
+                        facingMode: { exact: faceMode },
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    },
+                    audio: false
                 };
-                stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (exactErr) {
+                    // Some devices reject exact facingMode. Fall back to ideal.
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: { ideal: faceMode },
+                            width: { ideal: 1920 },
+                            height: { ideal: 1080 }
+                        },
+                        audio: false
+                    });
+                }
+
+                video.muted = true;
+                video.playsInline = true;
+                video.setAttribute('playsinline', '');
                 video.srcObject = stream;
+
+                const ready = await waitForVideoReady(6000);
+                if (!ready) throw new Error('Camera opened but video frames are not ready.');
+
                 await video.play();
+                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
                 statusMsg.innerHTML = `<span class="ready">✅ Camera ready (${faceMode === 'environment' ? 'Rear' : 'Front'})</span>`;
                 return true;
             } catch (err) {
+                console.error('Camera start failed:', err);
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                video.srcObject = null;
                 statusMsg.innerHTML = `<span class="error">❌ Camera error: ${err.message}</span>`;
                 return false;
             }
@@ -794,15 +929,24 @@
         // Capture
         // ============================================================
         async function capturePhoto() {
+            if (captureInProgress) return;
             if (!stream) { alert('Camera not ready.'); return; }
             if (!gpsReady) { alert('Waiting for GPS location...'); return; }
+            if (!supabaseReady) { alert('Secure backend is still connecting. Please wait a moment.'); return; }
+
+            captureInProgress = true;
+            updateUI();
+
+            // IMPORTANT: Capture does NOT allocate or increment an NSP number.
+            // The central number is assigned only when Download is pressed.
+            currentPhotoSerial = 0;
+            currentBatchId = '';
+            currentPhotoMeta = null;
 
             flash.classList.add('active');
             setTimeout(() => flash.classList.remove('active'), 150);
 
-            currentPhotoSerial = getNextSerialNumber();
-            serialCommitted = false;
-            const countLabel = `${CONFIG.countPrefix}${currentPhotoSerial}`;
+            const countLabel = 'NSP-PENDING';
 
             const now = new Date();
             const timestamp = formatDateTime12hr(now);
@@ -915,13 +1059,8 @@ ctx.shadowBlur = 4;
 ctx.fillText('🕐 ', iconX, y);
 ctx.fillText(`${timestamp}  ${tzAbbr}`, textX, y);
 
-// --- Serial (top right) ---
-ctx.textAlign = 'right';
-ctx.textBaseline = 'top';
-ctx.shadowBlur = 5;
-ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
-ctx.fillStyle = 'rgba(255,215,0,0.70)';
-ctx.fillText(countLabel, canvas.width - padX, stampY + padTop);
+// --- Serial is intentionally NOT stamped at capture time. ---
+// It is added only after the user presses Download and the backend accepts the photo.
 
 // --- Logo (bottom right) ---
 ctx.shadowBlur = 0;
@@ -960,100 +1099,241 @@ if (logoReady && logoImage) {
                     previewImage.src = URL.createObjectURL(blob);
                     previewWrapper.style.display = 'block';
                     downloadBtn.disabled = false;
-                    statusMsg.innerHTML = `<span class="ready">✅ Captured.Press Download.</span>`;
+                    captureInProgress = false;
+                    updateUI();
+
+                    currentPhotoMeta = {
+                        timestamp,
+                        lat,
+                        lng,
+                        address
+                    };
+
+                    statusMsg.innerHTML = `<span class="ready">✅ Photo captured. Press Download to save and assign NSP number.</span>`;
                 }, 'image/jpeg', 0.92);
             } catch (err) {
+                captureInProgress = false;
+                updateUI();
                 statusMsg.innerHTML = `<span class="error">❌ Capture failed: ${err.message}</span>`;
             }
         }   
 
         // ============================================================
-        // DB upload
+        // Supabase Storage + database upload
         // ============================================================
-        async function uploadToDatabase(blob, meta) {
-            if (!CONFIG.dbUploadUrl) return { success: false, reason: 'no-endpoint' };
+        function compressForUpload(blob) {
+            return new Promise((resolve, reject) => {
+                const objectUrl = URL.createObjectURL(blob);
+                const img = new Image();
+
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = CONFIG.outputWidth;
+                        canvas.height = CONFIG.outputHeight;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        canvas.toBlob((compressed) => {
+                            URL.revokeObjectURL(objectUrl);
+                            if (!compressed) {
+                                reject(new Error('Could not compress image.'));
+                                return;
+                            }
+                            resolve(compressed);
+                        }, 'image/jpeg', 0.72);
+                    } catch (err) {
+                        URL.revokeObjectURL(objectUrl);
+                        reject(err);
+                    }
+                };
+
+                img.onerror = () => {
+                    URL.revokeObjectURL(objectUrl);
+                    reject(new Error('Could not prepare image for upload.'));
+                };
+
+                img.src = objectUrl;
+            });
+        }
+
+        function stampFinalSerial(blob, serial) {
+            return new Promise((resolve, reject) => {
+                const objectUrl = URL.createObjectURL(blob);
+                const img = new Image();
+
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = CONFIG.outputWidth;
+                        canvas.height = CONFIG.outputHeight;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        const stampHeight = Math.round(canvas.height * 0.20);
+                        const stampY = canvas.height - stampHeight;
+                        const padX = Math.round(canvas.width * 0.04);
+                        const padTop = 7;
+                        const fsCount = 36;
+
+                        ctx.textAlign = 'right';
+                        ctx.textBaseline = 'top';
+                        ctx.shadowColor = 'rgba(0,0,0,0.75)';
+                        ctx.shadowBlur = 5;
+                        ctx.shadowOffsetY = 1;
+                        ctx.font = `bold ${fsCount}px 'Arial Black', 'Arial', sans-serif`;
+                        ctx.fillStyle = 'rgba(255,215,0,0.70)';
+                        ctx.fillText(`${CONFIG.countPrefix}${serial}`, canvas.width - padX, stampY + padTop);
+
+                        canvas.toBlob((finalBlob) => {
+                            URL.revokeObjectURL(objectUrl);
+                            if (!finalBlob) {
+                                reject(new Error('Could not create final stamped image.'));
+                            } else {
+                                resolve(finalBlob);
+                            }
+                        }, 'image/jpeg', 0.92);
+                    } catch (err) {
+                        URL.revokeObjectURL(objectUrl);
+                        reject(err);
+                    }
+                };
+
+                img.onerror = () => {
+                    URL.revokeObjectURL(objectUrl);
+                    reject(new Error('Could not prepare final image.'));
+                };
+
+                img.src = objectUrl;
+            });
+        }
+
+        async function uploadFinalPhoto(blob, meta) {
+            const uploadBlob = await compressForUpload(blob);
+            const safeBatch = String(meta.batchId).replace(/[^a-zA-Z0-9_-]/g, '_');
+            const storagePath = `${safeBatch}/${meta.serial}_${Date.now()}_${crypto.randomUUID()}.jpg`;
+
+            const { error: storageError } = await supabaseClient
+                .storage
+                .from(CONFIG.storageBucket)
+                .upload(storagePath, uploadBlob, {
+                    contentType: 'image/jpeg',
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (storageError) throw storageError;
+
             try {
-                const form = new FormData();
-                form.append('photo', blob, meta.filename);
-                form.append('serial', String(meta.serial));
-                form.append('company', CONFIG.companyName);
-                form.append('timestamp', meta.timestamp);
-                form.append('latitude', meta.lat !== null ? String(meta.lat) : '');
-                form.append('longitude', meta.lng !== null ? String(meta.lng) : '');
-                form.append('address', meta.address);
-                form.append('device', navigator.userAgent);
-
-                const headers = {};
-                if (CONFIG.dbApiKey) headers['Authorization'] = `Bearer ${CONFIG.dbApiKey}`;
-
-                const res = await fetch(CONFIG.dbUploadUrl, { method: 'POST', headers, body: form });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const json = await res.json().catch(() => ({}));
-                return { success: true, response: json };
+                await commitPhotoRecord({ ...meta, storagePath });
             } catch (err) {
-                return { success: false, reason: err.message };
+                await supabaseClient.storage
+                    .from(CONFIG.storageBucket)
+                    .remove([storagePath])
+                    .catch(() => {});
+                throw err;
             }
+
+            return { success: true, storagePath };
         }
 
         // ============================================================
-        // Download
+        // Download = final commit point
         // ============================================================
         async function downloadPhoto() {
-            if (!currentPhotoBlob) return;
+            if (!currentPhotoBlob || !currentPhotoMeta) return;
+            if (!supabaseReady) {
+                statusMsg.innerHTML = `<span class="error">❌ Secure backend is not ready.</span>`;
+                return;
+            }
 
-            const now = new Date();
-            const ts = now.getFullYear() +
-                String(now.getMonth() + 1).padStart(2, '0') +
-                String(now.getDate()).padStart(2, '0') + '_' +
-                String(now.getHours()).padStart(2, '0') +
-                String(now.getMinutes()).padStart(2, '0') +
-                String(now.getSeconds()).padStart(2, '0');
-            const filename = `Nspira_${currentPhotoSerial}_${ts}.jpg`;
+            downloadBtn.disabled = true;
+            statusMsg.innerHTML = `<span class="ready">⏳ Saving photo securely and assigning NSP number...</span>`;
 
-            commitSerial();
+            try {
+                // Retry a few times in case another user commits the same next number
+                // between our peek and commit. This keeps the central counter unique.
+                let committed = false;
+                let finalBlob = null;
+                let committedMeta = null;
 
-            if (isIOS || (isSafari && !window.MSStream)) {
-                showIOSOverlay(filename);
-            } else {
-                try {
+                for (let attempt = 0; attempt < 3 && !committed; attempt++) {
+                    const allocation = await peekNextSerial();
+                    const finalSerial = allocation.serial;
+                    const batchId = allocation.batchId;
+
+                    finalBlob = await stampFinalSerial(currentPhotoBlob, finalSerial);
+
+                    const now = new Date();
+                    const ts = now.getFullYear() +
+                        String(now.getMonth() + 1).padStart(2, '0') +
+                        String(now.getDate()).padStart(2, '0') + '_' +
+                        String(now.getHours()).padStart(2, '0') +
+                        String(now.getMinutes()).padStart(2, '0') +
+                        String(now.getSeconds()).padStart(2, '0');
+                    const filename = `Nspira_${finalSerial}_${ts}.jpg`;
+
+                    committedMeta = {
+                        filename,
+                        serial: finalSerial,
+                        batchId,
+                        timestamp: currentPhotoMeta.timestamp,
+                        lat: currentPhotoMeta.lat,
+                        lng: currentPhotoMeta.lng,
+                        address: currentPhotoMeta.address
+                    };
+
+                    try {
+                        await uploadFinalPhoto(finalBlob, committedMeta);
+                        committed = true;
+                    } catch (err) {
+                        // Serial changed because another client committed first.
+                        // Retry with the new next serial. Other errors stop immediately.
+                        if (String(err.message || '').includes('Serial changed') || String(err.message || '').includes('serial')) {
+                            continue;
+                        }
+                        throw err;
+                    }
+                }
+
+                if (!committed || !finalBlob || !committedMeta) {
+                    throw new Error('Could not obtain a unique NSP number. Please try Download again.');
+                }
+
+                currentPhotoSerial = committedMeta.serial;
+                currentBatchId = committedMeta.batchId;
+
+                // Download exactly the same final image that was uploaded.
+                if (isIOS || (isSafari && !window.MSStream)) {
+                    currentPhotoBlob = finalBlob;
+                    showIOSOverlay(committedMeta.filename);
+                } else {
                     const link = document.createElement('a');
-                    link.href = URL.createObjectURL(currentPhotoBlob);
-                    link.download = filename;
+                    link.href = URL.createObjectURL(finalBlob);
+                    link.download = committedMeta.filename;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                     setTimeout(() => URL.revokeObjectURL(link.href), 1500);
-                    statusMsg.innerHTML = `<span class="ready">✅ Downloaded: ${filename}</span>`;
-                } catch (e) {
-                    statusMsg.innerHTML = `<span class="warn">⚠️ Download issue — share fallback.</span>`;
-                    showIOSOverlay(filename);
                 }
+
+                statusMsg.innerHTML = `<span class="ready">✅ Downloaded: NSP-${committedMeta.serial}</span>`;
+
+                setTimeout(() => {
+                    downloadBtn.disabled = true;
+                    previewWrapper.style.display = 'none';
+                    previewImage.src = '';
+                    currentPhotoBlob = null;
+                    currentPhotoSerial = 0;
+                    currentBatchId = '';
+                    currentPhotoMeta = null;
+                    updateUI();
+                }, 1500);
+            } catch (err) {
+                console.error('Final download/upload failed:', err);
+                downloadBtn.disabled = false;
+                statusMsg.innerHTML = `<span class="error">❌ Photo was not saved. NSP number was not committed. ${err.message}</span>`;
             }
-
-            const meta = {
-                filename,
-                serial: currentPhotoSerial,
-                timestamp: formatDateTime12hr(now),
-                lat: currentGPS.lat,
-                lng: currentGPS.lng,
-                address: currentGPS.address,
-            };
-            uploadToDatabase(currentPhotoBlob, meta).then((result) => {
-                if (result.success) {
-                    statusMsg.innerHTML += `<br /><span class="ready">☁️ Uploaded.</span>`;
-                } else if (result.reason !== 'no-endpoint') {
-                    statusMsg.innerHTML += `<br /><span class="warn">⚠️ DB upload failed.</span>`;
-                }
-            });
-
-            setTimeout(() => {
-                downloadBtn.disabled = true;
-                previewWrapper.style.display = 'none';
-                previewImage.src = '';
-                currentPhotoBlob = null;
-                serialCommitted = false;
-                updateUI();
-            }, 1500);
         }
 
         // ============================================================
@@ -1085,16 +1365,9 @@ if (logoReady && logoImage) {
         });
 
         // ============================================================
-        // Reset
+        // Serial reset is intentionally NOT exposed on the public camera page.
+        // The admin report page will perform a server-side batch reset later.
         // ============================================================
-        async function resetSerial() {
-            photoCount = 0;
-            serialCommitted = false;
-            localStorage.setItem(CONFIG.lsSerialKey, '0');
-            updateUI();
-            statusMsg.innerHTML = `<span class="ready">✅ Serial reset. Ready for next capture.</span>`;
-        }
-        window.nspiraReset = resetSerial;
 
         // ============================================================
         // Switch camera
@@ -1119,7 +1392,17 @@ if (logoReady && logoImage) {
                 statusMsg.innerHTML = `<span class="error">❌ Camera requires HTTPS.</span>`;
                 return;
             }
+
+            statusMsg.innerHTML = `<span class="ready">🔐 Connecting to secure backend...</span>`;
             await loadLogo();
+
+            const backendReady = await initSupabase();
+            if (!backendReady) {
+                updateUI();
+                return;
+            }
+
+            statusMsg.innerHTML = `<span class="ready">🔐 Secure backend connected. Starting camera...</span>`;
             startGeolocation();
             await startCamera('environment');
             updateUI();
