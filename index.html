@@ -253,7 +253,7 @@
 
     <div class="container">
         <div class="header">
-            <h1>Nspira Photo Stamping(By F&A)</h1>
+            <h1>Nspira Photo Stamping(By F&A)-1</h1>
         </div>
 
         <div class="video-wrapper" id="videoWrapper">
@@ -329,7 +329,7 @@
         const CONFIG = {
             companyName: '📸 Captured By Nspira Camera',
             countPrefix: 'NSP-',
-            addressMaxLines: 3,          // Up to 3 lines for a fuller address
+            addressMaxLines: 3,          // Up to 4 lines for a fuller address
             addressCharsPerLine: 70,     // Better fit for building/institution names
             storageBucket: 'photo-stamping',
             // ✅ Use embedded logo — no CORS, always draws
@@ -1141,7 +1141,7 @@ if (logoReady && logoImage) {
                                 return;
                             }
                             resolve(compressed);
-                        }, 'image/jpeg', 0.72);
+                        }, 'image/jpeg', 0.80);
                     } catch (err) {
                         URL.revokeObjectURL(objectUrl);
                         reject(err);
@@ -1317,7 +1317,7 @@ if (logoReady && logoImage) {
                     setTimeout(() => URL.revokeObjectURL(link.href), 1500);
                 }
 
-                statusMsg.innerHTML = `<span class="ready">✅ Downloaded: NSP-${committedMeta.serial}</span>`;
+                statusMsg.innerHTML = `<span class="ready">✅ Downloaded and saved: NSP-${committedMeta.serial}</span>`;
 
                 setTimeout(() => {
                     downloadBtn.disabled = true;
